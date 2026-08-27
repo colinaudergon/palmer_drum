@@ -10,8 +10,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "hardware/adc.h"
-#include "../../../include/IAdcController.h"
-
+#include "running_median.h"
 namespace hw_interface
 {
 
@@ -19,54 +18,44 @@ namespace hw_interface
     // caller into an AdcConfig{data, size} pair (see IAdcController::Init()):
     //   PicoAdcConfig cfg{26, 27, 28, 29};
     //   adc_controller.Init(hw_interface::AdcConfig{&cfg, sizeof(cfg)});
-    struct PicoAdcConfig
+    namespace
     {
-        uint adc_1_gpio;
-        uint adc_2_gpio;
-        uint adc_3_gpio;
-        uint adc_4_gpio;
-    };
 
-    // Concrete IAdcController implementation for the RP2040's on-board ADC.
-    class PicoAdcController: public IAdcController
+        static constexpr size_t kMaxAdcBufferSize = 19; // value from RunningMedian.h
+
+        struct PicoAdcConfig
+        {
+            uint internal_adc_gpio;
+            size_t number_of_adc;
+            uint gpio_ctrl_a;
+            uint gpio_ctrl_b;
+            uint gpio_ctrl_c;
+        };
+    }
+
+    class PicoAdcController
     {
     public:
-        PicoAdcController() = default;
-        ~PicoAdcController() override = default;
-
-        int Init(const AdcConfig &config) override;
-        int StartReading() override;
-        int StopReading() override;
-        int SetAdcDeadBand(uint8_t adc_id, uint16_t deadband_low_threshold, uint16_t deadband_high_threshold) override;
-        bool IsReadingValid() override;
-
-        int GetAllNormalizedReading(float& buffer) override;
-        int GetNormalizedReading(uint8_t adc_id, float& normalized_value) override;
-
-        int GetAllRawReading(uint16_t& buffer) override;
-        int GetRawReading(uint8_t adc_id, uint16_t& raw_value) override;
+        int Init(const PicoAdcConfig &config);
+        void Process();
+        float GetLastReading(size_t adc_index);
 
     private:
-        static constexpr uint8_t kNbrAdc = 4;
+        static constexpr uint8_t kNbrMaxAdc = 8;
         static constexpr uint16_t kAdcMaxValue = 4095;
         static constexpr int32_t kBackgroundReadingPeriodUs = -1000;
+        static constexpr uint kAdcNumber = 0;
 
-        Adc internal_adcs_[kNbrAdc];
-        uint16_t raw_reading_[kNbrAdc];
-        float normalized_reading_[kNbrAdc];
-        uint16_t previous_valid_raw_reading_[kNbrAdc];
-        bool has_previous_valid_reading_[kNbrAdc];
+        RunningMedian medians_[kNbrMaxAdc];
 
-        bool initialized_ = false;
-        bool is_reading_ = false;
-        bool last_reading_valid_ = false;
         uint8_t next_adc_position_ = 0;
-        repeating_timer_t reading_timer_;
-
-        int GetBufferPositionFromAdcId(uint8_t adc_id) const;
-        void ProcessSingleRoundRobinStep();
-        static bool ReadingTimerCallback(repeating_timer_t *timer);
-
+        PicoAdcConfig config_;
+        bool initialized_{false};
+        void SelectAdcInput(size_t adc_number);
+        static constexpr int kAdcControllerSuccess = 0;
+        static constexpr int kAdcControllerErr = -1;
+        static constexpr int kAdcControllerAlreadyReading = -2;
+        static constexpr int kAdcControllerAccessOutofBound = -3;
     };
 
 } // namespace hw_interface

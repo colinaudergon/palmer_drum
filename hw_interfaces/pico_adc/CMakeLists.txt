@@ -1,6 +1,7 @@
 add_library(pico_adc STATIC
         src/pico_adc.cpp
-)
+        src/running_median.cpp
+        )
 
 target_include_directories(pico_adc PUBLIC
         include

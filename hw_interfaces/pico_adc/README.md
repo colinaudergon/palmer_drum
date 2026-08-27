@@ -1,48 +1,49 @@
 # pico_adc
 
-`PicoAdcController` is the RP2040-specific implementation of the hardware-agnostic
-`hw_interface::IAdcController` interface (see `hw_interfaces/include/IAdcController.h`). It
-drives the Pico's on-board ADC to read up to 4 channels in a background round-robin timer,
-with optional per-channel deadband filtering to ignore small/noisy fluctuations.
+`PicoAdcController` drives the RP2040's on-board ADC through an external analog multiplexer,
+letting a single ADC input read up to 8 channels. Each channel's readings are smoothed with a
+`RunningMedian` filter (see `running_median.h`) to reduce noise.
 
-Configuration is passed through `IAdcController::Init()`'s generic, packed `AdcConfig{data, size}`
-blob rather than hardware-specific parameters, so the interface itself stays free of any
-assumption about the underlying ADC. `PicoAdcController` defines its own `PicoAdcConfig` (4 GPIO
-numbers) and unpacks it from the blob.
+The controller is configured directly with a `PicoAdcConfig` struct (no generic interface layer
+or config blob):
+
+```cpp
+struct PicoAdcConfig
+{
+    uint internal_adc_gpio; // Pico GPIO wired to the mux's shared output (must be 26-29)
+    size_t number_of_adc;   // number of mux channels actually in use (max 8)
+    uint gpio_ctrl_a;       // mux select line A (LSB)
+    uint gpio_ctrl_b;       // mux select line B
+    uint gpio_ctrl_c;       // mux select line C (MSB)
+};
+```
+
+`gpio_ctrl_a/b/c` select which of the up to 8 mux channels is currently routed to
+`internal_adc_gpio`; `PicoAdcController` cycles through channels `0..number_of_adc-1`
+round-robin each time `Process()` is called.
 
 ## Usage
 
 ```cpp
 #include "pico_adc.h"
 
-using hw_interface::AdcConfig;
-using hw_interface::IAdcController;
 using hw_interface::PicoAdcConfig;
 using hw_interface::PicoAdcController;
 
 PicoAdcController adc_controller;
 
-// GPIO 26-29 map to ADC channels 0-3 on the Pico.
-PicoAdcConfig config{26, 27, 28, 29};
-if (adc_controller.Init(AdcConfig{&config, sizeof(config)}) != 0)
+// GPIO 26 is wired to the mux output; GPIOs 10/11/12 drive the mux select lines A/B/C;
+// 4 of the mux's channels are wired up.
+PicoAdcConfig config{26, 4, 10, 11, 12};
+if (adc_controller.Init(config) != 0)
 {
-    // handle init failure (invalid GPIO, etc.)
+    // handle init failure (invalid ADC GPIO, etc.)
 }
 
-// Optional: ignore raw readings that don't move by more than +/-50 counts.
-adc_controller.SetAdcDeadBand(/*adc_id=*/0, /*deadband_low=*/50, /*deadband_high=*/50);
+// Call repeatedly (e.g. from the main loop) to advance the round-robin sampling and
+// keep each channel's running median up to date.
+adc_controller.Process();
 
-adc_controller.StartReading(); // begins sampling all 4 channels on a background timer
-
-float value = 0.0f;
-if (adc_controller.IsReadingValid() && adc_controller.GetNormalizedReading(0, value) == 0)
-{
-    // `value` is channel 0's latest reading, normalized to [0.0, 1.0]
-}
-
-adc_controller.StopReading();
+// Read the latest median-filtered value (raw 12-bit ADC counts, 0-4095) for a channel.
+float value = adc_controller.GetLastReading(/*adc_index=*/0);
 ```
-
-Because `PicoAdcController` is accessed through `IAdcController`, application code that only
-depends on the interface can swap in another implementation (e.g. a Linux ADC emulator for
-testing) without any change beyond how the concrete controller is constructed and configured.
