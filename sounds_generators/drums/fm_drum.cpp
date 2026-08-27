@@ -84,24 +84,6 @@ static const uint16_t sd_map[10][4] = {
   { 65535, 0, 8192, 32768 },
 };
 
-void FmDrum::Morph(uint16_t x, uint16_t y) {
-  const uint16_t (*map)[4] = sd_range_ ? sd_map : bd_map;
-  uint16_t parameters[4];
-  for (uint8_t i = 0; i < 4; ++i) {
-    uint16_t x_integral = (x >> 14) << 1;
-    uint16_t x_fractional = x << 2;
-    uint16_t a = map[x_integral][i];
-    uint16_t b = map[x_integral + 2][i];
-    uint16_t c = map[x_integral + 1][i];
-    uint16_t d = map[x_integral + 3][i];
-    
-    uint16_t e = a + ((b - a) * x_fractional >> 16);
-    uint16_t f = c + ((d - c) * x_fractional >> 16);
-    parameters[i] = e + ((f - e) * y >> 16);
-  }
-  Configure(parameters, CONTROL_MODE_FULL);
-}
-
 uint32_t FmDrum::ComputeEnvelopeIncrement(uint16_t decay) {
   uint32_t a = lut_env_increments[decay >> 8];
   uint32_t b = lut_env_increments[(decay >> 8) + 1];

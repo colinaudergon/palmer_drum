@@ -43,16 +43,11 @@ class FmDrum {
   void Init();
   void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
 
-  void Morph(uint16_t x, uint16_t y);
-  void Configure(uint16_t* parameter, ControlMode control_mode) {
-    if (control_mode == CONTROL_MODE_HALF) {
-      Morph(parameter[0], parameter[1]);
-    } else {
+  void Configure(uint16_t* parameter) {
       set_frequency(parameter[0]);
       set_fm_amount((parameter[1] >> 2) * 3);
       set_decay(parameter[2]);
       set_noise(parameter[3]);
-    }
   }
   
   inline void set_sd_range(bool sd_range) {

@@ -64,9 +64,9 @@ namespace peaks
     {                                                                               \
         variable.Process(gate_flags, out, size);                                    \
     }                                                                               \
-    void ClassName##Configure(uint16_t *p, ControlMode control_mode)                \
+    void ClassName##Configure(uint16_t *p)                                          \
     {                                                                               \
-        variable.Configure(p, control_mode);                                        \
+        variable.Configure(p);                                                      \
     }                                                                               \
     ClassName variable;
 
@@ -80,7 +80,7 @@ namespace peaks
 
         typedef void (Processors::*InitFn)();
         typedef void (Processors::*ProcessFn)(const GateFlags *, int16_t *, size_t);
-        typedef void (Processors::*ConfigureFn)(uint16_t *, ControlMode);
+        typedef void (Processors::*ConfigureFn)(uint16_t *);
 
         struct ProcessorCallbacks
         {
@@ -88,12 +88,6 @@ namespace peaks
             ProcessFn process_fn;
             ConfigureFn configure_fn;
         };
-
-        inline void set_control_mode(ControlMode control_mode)
-        {
-            control_mode_ = control_mode;
-            Configure();
-        }
 
         inline void set_parameter(uint8_t index, uint16_t parameter)
         {
@@ -108,7 +102,7 @@ namespace peaks
 
         inline void set_function(ProcessorFunction function)
         {
-            function_ = function;            
+            function_ = function;
             callbacks_ = callbacks_table_[function];
             Configure();
         }
@@ -128,12 +122,10 @@ namespace peaks
             if (function_ == PROCESSOR_FUNCTION_SNARE_DRUM ||
                 function_ == PROCESSOR_FUNCTION_HIGH_HAT)
             {
-                uint16_t tone_parameter = control_mode_ == CONTROL_MODE_FULL
-                                              ? parameter_[1]
-                                              : parameter_[0];
-                uint16_t snappy_parameter = control_mode_ == CONTROL_MODE_FULL
-                                                ? parameter_[2]
-                                                : parameter_[1];
+
+                uint16_t tone_parameter = parameter_[1];
+                uint16_t snappy_parameter = parameter_[2];
+
                 if (tone_parameter >= 65000 && snappy_parameter >= 65000)
                 {
                     if (function_ != PROCESSOR_FUNCTION_HIGH_HAT)
@@ -149,10 +141,9 @@ namespace peaks
                     }
                 }
             }
-            (this->*callbacks_.configure_fn)(&parameter_[0], control_mode_);
+            (this->*callbacks_.configure_fn)(&parameter_[0]);
         }
 
-        ControlMode control_mode_;
         ProcessorFunction function_;
         uint16_t parameter_[4];
 
@@ -164,7 +155,6 @@ namespace peaks
         DECLARE_PROCESSOR(HighHat, high_hat_);
         DECLARE_PROCESSOR(FmDrum, fm_drum_);
         DECLARE_PROCESSOR(NumberStation, number_station_);
-
     };
 
     // extern Processors processors[2];

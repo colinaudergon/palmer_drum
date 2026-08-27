@@ -46,18 +46,11 @@ class BassDrum {
   void Init();
   void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
   
-  void Configure(uint16_t* parameter, ControlMode control_mode) {
-    if (control_mode == CONTROL_MODE_HALF) {
-      set_frequency(0);
-      set_punch(40000);
-      set_tone(8192 + (parameter[0] >> 1));
-      set_decay(parameter[1]);
-    } else {
+  void Configure(uint16_t* parameter) {
       set_frequency(parameter[0] - 32768);
       set_punch(parameter[1]);
       set_tone(parameter[2]);
       set_decay(parameter[3]);
-    }
   }
   
   void set_frequency(int16_t frequency) {
