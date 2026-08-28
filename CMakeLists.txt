@@ -33,11 +33,12 @@ project(palmer_drum C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 add_subdirectory(hw_interfaces/pwm_audio_codec)
+add_subdirectory(hw_interfaces/pico_adc)
 add_subdirectory(sounds_generators)
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(palmer_drum palmer_drum.cpp )
+add_executable(palmer_drum palmer_drum.cpp utils/cross_core_queues.cpp core1/core1_main.cpp)
 
 pico_set_program_name(palmer_drum "palmer_drum")
 pico_set_program_version(palmer_drum "0.1")
@@ -49,8 +50,10 @@ pico_enable_stdio_usb(palmer_drum 0)
 # Add the standard library to the build
 target_link_libraries(palmer_drum
         pico_stdlib
+        pico_multicore
         hardware_clocks
         pwm_audio_codec
+        pico_adc
         SoundGenerator
         )
 

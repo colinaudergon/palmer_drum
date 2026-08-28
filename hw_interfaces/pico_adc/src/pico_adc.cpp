@@ -1,5 +1,6 @@
 #include "pico_adc.h"
 
+#include <cmath>
 #include <cstring>
 
 namespace hw_interface
@@ -57,6 +58,9 @@ namespace hw_interface
         }
 
         SelectAdcInput(next_adc_position_);
+        //  let the mux output / ADC sample-and-hold settle before converting,
+        //  otherwise the reading is a blend with the previously selected channel.
+        sleep_us(kMuxSettleUs);
 
         medians_[next_adc_position_].add(adc_read());
 
@@ -70,8 +74,17 @@ namespace hw_interface
             adc_index = kNbrMaxAdc -1;
         }
 
-        return medians_[adc_index].getMedian();
+        float value = medians_[adc_index].getMedian();
 
+        //  only move the reported value once it clears the deadband, so small
+        //  jitter is ignored but larger/intentional moves stay immediately responsive.
+        if (!has_reported_[adc_index] || std::abs(value - last_reported_[adc_index]) >= kDeadband)
+        {
+            last_reported_[adc_index] = value;
+            has_reported_[adc_index] = true;
+        }
+
+        return last_reported_[adc_index];
     }
 
     void PicoAdcController::SelectAdcInput(size_t adc_number)

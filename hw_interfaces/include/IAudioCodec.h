@@ -6,13 +6,14 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 
 namespace hw_interface
 {
     typedef struct
     {
-        float *buffer_left;
-        float *buffer_right;
+        int16_t *buffer_left;
+        int16_t *buffer_right;
         size_t buffer_len;
     } audio_buffer_t;
 

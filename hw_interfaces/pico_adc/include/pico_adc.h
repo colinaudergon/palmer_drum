@@ -14,28 +14,23 @@
 namespace hw_interface
 {
 
-    // Hardware-specific configuration consumed by PicoAdcController::Init(), packed by the
-    // caller into an AdcConfig{data, size} pair (see IAdcController::Init()):
-    //   PicoAdcConfig cfg{26, 27, 28, 29};
-    //   adc_controller.Init(hw_interface::AdcConfig{&cfg, sizeof(cfg)});
-    namespace
+    static constexpr size_t kMaxAdcBufferSize = 19; // value from RunningMedian.h
+
+    struct PicoAdcConfig
     {
-
-        static constexpr size_t kMaxAdcBufferSize = 19; // value from RunningMedian.h
-
-        struct PicoAdcConfig
-        {
-            uint internal_adc_gpio;
-            size_t number_of_adc;
-            uint gpio_ctrl_a;
-            uint gpio_ctrl_b;
-            uint gpio_ctrl_c;
-        };
-    }
+        uint internal_adc_gpio;
+        size_t number_of_adc;
+        uint gpio_ctrl_a;
+        uint gpio_ctrl_b;
+        uint gpio_ctrl_c;
+    };
 
     class PicoAdcController
     {
     public:
+        PicoAdcController() {
+        };
+        ~PicoAdcController() {};
         int Init(const PicoAdcConfig &config);
         void Process();
         float GetLastReading(size_t adc_index);
@@ -45,8 +40,15 @@ namespace hw_interface
         static constexpr uint16_t kAdcMaxValue = 4095;
         static constexpr int32_t kBackgroundReadingPeriodUs = -1000;
         static constexpr uint kAdcNumber = 0;
+        //  time to let the external mux output and ADC input settle after switching channels
+        static constexpr uint32_t kMuxSettleUs = 10;
+        //  minimum change (raw ADC counts) required before a new reading is reported
+        static constexpr float kDeadband = 4.0f;
+        // static constexpr float kDeadband = 8.0f;
 
         RunningMedian medians_[kNbrMaxAdc];
+        float last_reported_[kNbrMaxAdc] = {0};
+        bool has_reported_[kNbrMaxAdc] = {false};
 
         uint8_t next_adc_position_ = 0;
         PicoAdcConfig config_;

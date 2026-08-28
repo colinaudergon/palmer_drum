@@ -64,8 +64,9 @@ void Processors::Init(uint8_t index) {
   number_station_.Init();
   number_station_.set_voice(index == 1);
   
-  set_function(PROCESSOR_FUNCTION_BASS_DRUM);
   std::fill(&parameter_[0], &parameter_[4], 32768);
+  set_function(PROCESSOR_FUNCTION_BASS_DRUM);
+  // set_function(PROCESSOR_FUNCTION_NUMBER_STATION);
 }
 
 /* extern */

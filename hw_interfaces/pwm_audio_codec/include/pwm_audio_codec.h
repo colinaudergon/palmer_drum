@@ -59,8 +59,8 @@ namespace hw_interface
         // slices)
         static constexpr uint kGpioOutputLeft = 10;
         static constexpr uint kGpioOutputRight = 12;
-        static constexpr uint kRepetitionRate = 4;
-        static constexpr uint kDefaultWrap = 254;
+        static constexpr uint kRepetitionRate = 3;
+        static constexpr uint kDefaultWrap = 1023;
         static constexpr float kDefaultSampleRateHz = 44100.0f;
 
         // Number of mono samples per half of the double buffer. Streamed from the registered
@@ -95,19 +95,19 @@ namespace hw_interface
             uint32_t single_sample = 0;
             uint32_t *single_sample_ptr = nullptr;
 
-            // 8-bit PWM compare values for this channel, DMA'd one byte at a time.
-            uint8_t pwm_buffer_0[kBufferSize] = {};
-            uint8_t pwm_buffer_1[kBufferSize] = {};
+            // 10-bit PWM compare values for this channel, DMA'd as 16-bit values.
+            uint16_t pwm_buffer_0[kBufferSize] = {};
+            uint16_t pwm_buffer_1[kBufferSize] = {};
         };
 
-        // Converts a [-1, 1] float sample into an 8-bit PWM compare value (0..kDefaultWrap),
+        // Converts a signed 16-bit sample into a 10-bit PWM compare value (0..kDefaultWrap),
         // centered at the midpoint so the signal can be AC-coupled through a capacitor on the
         // output.
-        uint8_t FloatToPwmSample(float sample) const;
+        uint16_t Int16ToPwmSample(int16_t sample) const;
 
-        // Quantizes one channel's float samples (kBufferSize of them) into pwm_buffer via
-        // FloatToPwmSample(). No downmixing -- each stereo channel drives its own pin.
-        void ConvertChannelToPwmBuffer(const float *samples, uint8_t *pwm_buffer) const;
+        // Quantizes one channel's int16_t samples (kBufferSize of them) into pwm_buffer via
+        // Int16ToPwmSample(). No downmixing -- each stereo channel drives its own pin.
+        void ConvertChannelToPwmBuffer(const int16_t *samples, uint16_t *pwm_buffer) const;
 
         // Configures one channel's PWM slice + 3-DMA-channel chain. If enable_irq is true, also
         // wires this channel's trigger DMA completion up to DMA_IRQ_1 (used for the left
@@ -161,10 +161,10 @@ namespace hw_interface
         // so the DMA is about to replay a stale buffer. See GetMissedRefillCount().
         volatile uint32_t missed_refill_count_ = 0;
 
-        float buffer_0_left_[kBufferSize] = {};
-        float buffer_0_right_[kBufferSize] = {};
-        float buffer_1_left_[kBufferSize] = {};
-        float buffer_1_right_[kBufferSize] = {};
+        int16_t buffer_0_left_[kBufferSize] = {};
+        int16_t buffer_0_right_[kBufferSize] = {};
+        int16_t buffer_1_left_[kBufferSize] = {};
+        int16_t buffer_1_right_[kBufferSize] = {};
 
         audio_buffer_t buffer_0_{buffer_0_left_, buffer_0_right_, kBufferSize};
         audio_buffer_t buffer_1_{buffer_1_left_, buffer_1_right_, kBufferSize};

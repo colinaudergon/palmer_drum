@@ -1,11 +1,11 @@
 /**
  * @file pwm_audio_codec.cpp
- * @brief IAudioCodec implementation for RP2040 builds, driving true stereo 8-bit PWM output
+ * @brief IAudioCodec implementation for RP2040 builds, driving true stereo 10-bit PWM output
  * through two fully independent 3-DMA-channel chains (one per stereo channel), each following
  * the classic RP2040 "PWM audio via DMA" technique: a trigger DMA channel paced by its slice's
  * PWM wrap DREQ retriggers a PWM DMA channel every cycle, which copies a single held 32-bit
  * value into that slice's CC register kRepetitionRate times before chaining to a sample DMA
- * channel that fetches the next 8-bit sample from the currently-playing PWM buffer.
+ * channel that fetches the next 10-bit sample from the currently-playing PWM buffer.
  *
  * Both channels' PWM slices share the identical clkdiv/wrap and are started back-to-back in
  * Start(), so their wrap-boundary timing stays deterministically aligned (no drift, since both
@@ -17,7 +17,7 @@
  *
  * The PWM clock divider is computed dynamically at Init() (and again by SetOutputFrequency())
  * from the measured system clock via frequency_count_khz(), rather than a hardcoded constant.
- * The sample DMA channel of each chain writes each 8-bit sample directly into the byte of its
+ * The sample DMA channel of each chain writes each 10-bit sample directly into the halfword of its
  * own single_sample location that corresponds to whichever PWM channel (A or B) its GPIO maps
  * to, so the same code works regardless of which channel each chosen GPIO uses.
  *
@@ -34,7 +34,6 @@
 
 #include "pwm_audio_codec.h"
 
-#include <algorithm>
 #include <cmath>
 #include <cstdio>
 
@@ -44,20 +43,19 @@ namespace hw_interface
 {
     PicoAudioCodec *PicoAudioCodec::instance_ = nullptr;
 
-    uint8_t PicoAudioCodec::FloatToPwmSample(float sample) const
+    uint16_t PicoAudioCodec::Int16ToPwmSample(int16_t sample) const
     {
-        float clamped = std::clamp(sample, -1.0f, 1.0f);
-        // Map [-1, 1] to [0, kDefaultWrap], centered at the midpoint so the signal can be
-        // AC-coupled through a capacitor on the output.
-        float scaled = (clamped * 0.5f + 0.5f) * static_cast<float>(kDefaultWrap);
-        return static_cast<uint8_t>(scaled + 0.5f);
+        // Map [INT16_MIN, INT16_MAX] to [0, kDefaultWrap], centered at the midpoint so the
+        // signal can be AC-coupled through a capacitor on the output.
+        float scaled = (static_cast<float>(sample) / 65536.0f + 0.5f) * static_cast<float>(kDefaultWrap);
+        return static_cast<uint16_t>(scaled + 0.5f);
     }
 
-    void PicoAudioCodec::ConvertChannelToPwmBuffer(const float *samples, uint8_t *pwm_buffer) const
+    void PicoAudioCodec::ConvertChannelToPwmBuffer(const int16_t *samples, uint16_t *pwm_buffer) const
     {
         for (size_t i = 0; i < kBufferSize; i++)
         {
-            pwm_buffer[i] = FloatToPwmSample(samples[i]);
+            pwm_buffer[i] = Int16ToPwmSample(samples[i]);
         }
     }
 
@@ -149,16 +147,16 @@ namespace hw_interface
         // sample, and its base read address is reset by the IRQ handler once per full buffer
         // pass.
         dma_channel_config sample_dma_chan_config = dma_channel_get_default_config(channel.sample_dma_chan);
-        channel_config_set_transfer_data_size(&sample_dma_chan_config, DMA_SIZE_8);
+        channel_config_set_transfer_data_size(&sample_dma_chan_config, DMA_SIZE_16);
         channel_config_set_read_increment(&sample_dma_chan_config, true);
         channel_config_set_write_increment(&sample_dma_chan_config, false);
 
         dma_channel_configure(
             channel.sample_dma_chan,
             &sample_dma_chan_config,
-            // Write to the byte of single_sample for pin_channel (0 => low byte / channel A,
-            // 1 => byte offset 2 / channel B).
-            reinterpret_cast<uint8_t *>(&channel.single_sample) + 2 * channel.pin_channel,
+            // Write to the halfword of single_sample for pin_channel (0 => channel A,
+            // 1 => channel B), matching the PWM slice CC register layout.
+            reinterpret_cast<uint16_t *>(&channel.single_sample) + channel.pin_channel,
             // Read from the buffer that will be playing first (primed in Start()).
             channel.pwm_buffer_0,
             // Only do one transfer (once per PWM DMA completion due to chaining).
@@ -243,20 +241,17 @@ namespace hw_interface
         // The buffer pair that just finished playing (i.e. NOT the one playing_index_ now
         // points to, since AcknoledgeIrq() flips it before calling this) is free to be refilled
         // with fresh audio for the pass after next.
-        uint8_t *filled_pwm_buffer_l = nullptr;
         if (playing_index_ == 0)
         {
             fill_cb_(&buffer_1_, &buffer_0_);
             ConvertChannelToPwmBuffer(buffer_1_.buffer_left, channel_l_.pwm_buffer_1);
             ConvertChannelToPwmBuffer(buffer_1_.buffer_right, channel_r_.pwm_buffer_1);
-            filled_pwm_buffer_l = channel_l_.pwm_buffer_1;
         }
         else
         {
             fill_cb_(&buffer_0_, &buffer_1_);
             ConvertChannelToPwmBuffer(buffer_0_.buffer_left, channel_l_.pwm_buffer_0);
             ConvertChannelToPwmBuffer(buffer_0_.buffer_right, channel_r_.pwm_buffer_0);
-            filled_pwm_buffer_l = channel_l_.pwm_buffer_0;
         }
     }
 
@@ -269,8 +264,8 @@ namespace hw_interface
         // (which may block, e.g. on SD card I/O) happens later in ServiceRefill(), polled from
         // the main loop, NOT here.
         playing_index_ = 1 - playing_index_;
-        uint8_t *ready_pwm_buffer_l = (playing_index_ == 0) ? channel_l_.pwm_buffer_0 : channel_l_.pwm_buffer_1;
-        uint8_t *ready_pwm_buffer_r = (playing_index_ == 0) ? channel_r_.pwm_buffer_0 : channel_r_.pwm_buffer_1;
+        uint16_t *ready_pwm_buffer_l = (playing_index_ == 0) ? channel_l_.pwm_buffer_0 : channel_l_.pwm_buffer_1;
+        uint16_t *ready_pwm_buffer_r = (playing_index_ == 0) ? channel_r_.pwm_buffer_0 : channel_r_.pwm_buffer_1;
 
         dma_hw->ch[channel_l_.sample_dma_chan].al1_read_addr = reinterpret_cast<uintptr_t>(ready_pwm_buffer_l);
         dma_hw->ch[channel_r_.sample_dma_chan].al1_read_addr = reinterpret_cast<uintptr_t>(ready_pwm_buffer_r);
