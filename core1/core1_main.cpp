@@ -1,6 +1,6 @@
 
 #include "utils/cross_core_queues.h"
-#include "../hw_interfaces/include/IInputHandler.h"
+#include "../hw_interfaces/include/InputHandler.h"
 #include "core1_main.h"
 #include "pico_adc.h"
 #include <algorithm>

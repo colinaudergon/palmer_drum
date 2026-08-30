@@ -27,7 +27,7 @@
 
 #include "pico/util/queue.h"
 
-#include "../hw_interfaces/include/IInputHandler.h"
+#include "../hw_interfaces/include/InputHandler.h"
 
 // ---- core1 -> core0: UI commands ---------------------------------------------------------
 
