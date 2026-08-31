@@ -46,3 +46,6 @@ private:
 };
 
 extern InputEventQueue input_event_queue_;
+extern InputEventQueue gate_event_queue_;
+extern InputEventQueue button_event_queue_;
+

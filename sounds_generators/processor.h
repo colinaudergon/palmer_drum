@@ -119,28 +119,28 @@ namespace peaks
     private:
         void Configure()
         {
-            if (function_ == PROCESSOR_FUNCTION_SNARE_DRUM ||
-                function_ == PROCESSOR_FUNCTION_HIGH_HAT)
-            {
+            // if (function_ == PROCESSOR_FUNCTION_SNARE_DRUM ||
+            //     function_ == PROCESSOR_FUNCTION_HIGH_HAT)
+            // {
 
-                uint16_t tone_parameter = parameter_[1];
-                uint16_t snappy_parameter = parameter_[2];
+            //     uint16_t tone_parameter = parameter_[1];
+            //     uint16_t snappy_parameter = parameter_[2];
 
-                if (tone_parameter >= 65000 && snappy_parameter >= 65000)
-                {
-                    if (function_ != PROCESSOR_FUNCTION_HIGH_HAT)
-                    {
-                        set_function(PROCESSOR_FUNCTION_HIGH_HAT);
-                    }
-                }
-                else if (tone_parameter <= 64500 || snappy_parameter <= 64500)
-                {
-                    if (function_ != PROCESSOR_FUNCTION_SNARE_DRUM)
-                    {
-                        set_function(PROCESSOR_FUNCTION_SNARE_DRUM);
-                    }
-                }
-            }
+            //     if (tone_parameter >= 65000 && snappy_parameter >= 65000)
+            //     {
+            //         if (function_ != PROCESSOR_FUNCTION_HIGH_HAT)
+            //         {
+            //             set_function(PROCESSOR_FUNCTION_HIGH_HAT);
+            //         }
+            //     }
+            //     else if (tone_parameter <= 64500 || snappy_parameter <= 64500)
+            //     {
+            //         if (function_ != PROCESSOR_FUNCTION_SNARE_DRUM)
+            //         {
+            //             set_function(PROCESSOR_FUNCTION_SNARE_DRUM);
+            //         }
+            //     }
+            // }
             (this->*callbacks_.configure_fn)(&parameter_[0]);
         }
 

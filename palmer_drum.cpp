@@ -15,6 +15,8 @@ int16_t output_buffer[buffer_size];
 
 static constexpr uint kInputEventQueueCapacity = 8;
 InputEventQueue input_event_queue_;
+InputEventQueue gate_event_queue_;
+InputEventQueue button_event_queue_;
 
 hw_interface::PicoAudioCodec audio_codec;
 
@@ -22,24 +24,13 @@ peaks::Processors processor;
 
 namespace
 {
-    // Free-running internal trigger, standing in for an external gate/CV input: pulses high
-    // for kGatePulseSamples out of every kGatePeriodSamples.
-    constexpr size_t kGatePeriodSamples = 2 * 22050; // ~2 Hz at the codec's 44.1kHz sample rate
-    constexpr size_t kGatePulseSamples = 32;
-
-    size_t gate_phase_ = 0;
+    size_t pending_gate_triggers_ = 0;
     peaks::GateFlags previous_gate_flag_ = peaks::GATE_FLAG_LOW;
     peaks::GateFlags gate_buffer[buffer_size];
 
-    void GenerateInternalGate(peaks::GateFlags *gate_flags, size_t size)
+    void ProcessGateInput()
     {
-        for (size_t i = 0; i < size; ++i)
-        {
-            bool gate_high = gate_phase_ < kGatePulseSamples;
-            gate_flags[i] = peaks::ExtractGateFlags(previous_gate_flag_, gate_high);
-            previous_gate_flag_ = gate_flags[i];
-            gate_phase_ = (gate_phase_ + 1) % kGatePeriodSamples;
-        }
+        ++pending_gate_triggers_;
     }
 } // namespace
 
@@ -49,7 +40,19 @@ void buffer_callback(hw_interface::audio_buffer_t *buffer_0, hw_interface::audio
     // read-ahead scratch space managed internally by the codec and isn't touched here.
     (void)buffer_1;
 
-    GenerateInternalGate(gate_buffer, buffer_0->buffer_len);
+    bool trigger_pending = pending_gate_triggers_ != 0;
+    if (trigger_pending)
+    {
+        --pending_gate_triggers_;
+    }
+
+    for (size_t i = 0; i < buffer_0->buffer_len; ++i)
+    {
+        bool gate_high = trigger_pending && i == 0;
+        gate_buffer[i] = peaks::ExtractGateFlags(previous_gate_flag_, gate_high);
+        previous_gate_flag_ = gate_buffer[i];
+    }
+
     processor.Process(gate_buffer, output_buffer, buffer_0->buffer_len);
 
     for (size_t i = 0; i < buffer_0->buffer_len; ++i)
@@ -65,6 +68,9 @@ int main()
     stdio_init_all();
 
     input_event_queue_.Init(kInputEventQueueCapacity);
+    gate_event_queue_.Init(kInputEventQueueCapacity);
+    button_event_queue_.Init(kInputEventQueueCapacity);
+
     multicore_launch_core1(Core1Main);
 
     processor.Init(0);
@@ -85,11 +91,27 @@ int main()
     {
 
         audio_codec.ServiceRefill();
-         while (input_event_queue_.TryPop(command))
+        while (gate_event_queue_.TryPop(command))
         {
-            if(command.type == hw_interface::ControlType::CONTROL_POT)
+            ProcessGateInput();
+        }
+
+        while (button_event_queue_.TryPop(command))
+        {
+            processor.set_function(static_cast<peaks::ProcessorFunction>(command.data));
+        }
+
+
+        while (input_event_queue_.TryPop(command))
+        {
+            if (command.type == hw_interface::ControlType::CONTROL_GATE)
             {
-                processor.set_parameter(command.control_id,command.data);
+                ProcessGateInput();
+            }
+
+            if (command.type == hw_interface::ControlType::CONTROL_POT)
+            {
+                processor.set_parameter(command.control_id, command.data);
             }
         }
     }

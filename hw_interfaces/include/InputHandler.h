@@ -12,6 +12,7 @@ namespace hw_interface
         CONTROL_ENCODER_LONG_CLICK = 3,
         CONTROL_SWITCH = 4,
         CONTROL_SWITCH_HOLD = 5,
+        CONTROL_GATE = 6,
         CONTROL_REFRESH = 0xff
     };
 
