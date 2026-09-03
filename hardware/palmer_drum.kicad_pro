@@ -429,7 +429,7 @@
         "uuid": "a1c8c82f-599d-4a64-8030-47d97f65a492"
       }
     ],
-    "used_designators": "D1-2,#PWR1-18,#PWR34-43,C1-3,C10-19,R6-17,J1-2,JP1-4,U1-2,FB1-2,RV1,P2-4,A1",
+    "used_designators": "D1-2,#PWR1-26,#PWR34-43,C1-5,C10-19,R6-17,J1-2,JP1-4,U1-3,FB1-2,RV1,P2-4,A1",
     "variants": []
   },
   "sheets": [
@@ -444,6 +444,10 @@
     [
       "7834b4b8-9788-4bd9-bce0-33b985075baf",
       "MULTIPLEXER_ADC"
+    ],
+    [
+      "fcc9e057-4082-4e26-bf28-c7fd4ed479d7",
+      "MCU"
     ]
   ],
   "text_variables": {},
