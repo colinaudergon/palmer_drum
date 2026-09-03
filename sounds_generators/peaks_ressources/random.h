@@ -26,8 +26,7 @@
 //
 // Fast 16-bit pseudo random number generator.
 
-#ifndef STMLIB_UTILS_RANDOM_H_
-#define STMLIB_UTILS_RANDOM_H_
+#pragma once
 
 
 #include "../../lib/mu_stmlib.h"
@@ -57,9 +56,9 @@ class Random {
  private:
   static uint32_t rng_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(Random);
+  Random(const Random &) = delete;
+  const Random &operator=(const Random &) = delete;
 };
 
 }  // namespace mu_stmlib
 
-#endif  // STMLIB_UTILS_RANDOM_H_

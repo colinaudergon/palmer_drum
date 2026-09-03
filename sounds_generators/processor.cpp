@@ -23,8 +23,6 @@
 // See http://creativecommons.org/licenses/MIT/ for more information.
 //
 // -----------------------------------------------------------------------------
-//
-// LFO.
 
 #include "processor.h"
 
@@ -35,38 +33,23 @@ namespace peaks {
 using namespace mu_stmlib;
 using namespace std;
 
-#define REGISTER_PROCESSOR(ClassName) \
-  { &Processors::ClassName ## Init, \
-    &Processors::ClassName ## Process, \
-    &Processors::ClassName ## Configure },
-
-/* static */
-const Processors::ProcessorCallbacks 
-Processors::callbacks_table_[PROCESSOR_FUNCTION_LAST] = {
-  REGISTER_PROCESSOR(BassDrum)
-  REGISTER_PROCESSOR(SnareDrum)
-  REGISTER_PROCESSOR(HighHat)
-  REGISTER_PROCESSOR(FmDrum)
-  REGISTER_PROCESSOR(NumberStation)
-};
-
 void Processors::Init(uint8_t index) {
-  for (uint16_t i = 0; i < PROCESSOR_FUNCTION_LAST; ++i) {
-    (this->*callbacks_table_[i].init_fn)();
-  }
-  
-  bass_drum_.Init();
-  snare_drum_.Init();
-  fm_drum_.Init();
-  fm_drum_.set_sd_range(index == 1);
-  high_hat_.Init();
+  processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kBassDrum)] = &bass_drum_;
+  processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kSnareDrum)] = &snare_drum_;
+  processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kHighHat)] = &high_hat_;
+  processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kFmDrum)] = &fm_drum_;
+  processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kNumberStation)] = &number_station_;
 
-  number_station_.Init();
+  for (uint16_t i = 0; i < GetProcessorIndexFromFunction(ProcessorFunction::kLast); ++i) {
+    processors_table_[i]->Init();
+  }
+
+  fm_drum_.set_sd_range(index == 1);
   number_station_.set_voice(index == 1);
   
   std::fill(&parameter_[0], &parameter_[4], 32768);
-  set_function(PROCESSOR_FUNCTION_BASS_DRUM);
-  // set_function(PROCESSOR_FUNCTION_NUMBER_STATION);
+  set_function(ProcessorFunction::kBassDrum);
+  // set_function(kNumberStation);
 }
 
 /* extern */

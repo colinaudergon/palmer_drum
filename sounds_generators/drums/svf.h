@@ -26,8 +26,7 @@
 //
 // SVF used for modeling the bridged T-networks.
 
-#ifndef PEAKS_DRUMS_SVF_H_
-#define PEAKS_DRUMS_SVF_H_
+#pragma once
 
 
 #include "../../lib/mu_stmlib.h"
@@ -112,9 +111,9 @@ class Svf {
   
   SvfMode mode_;
 
-  DISALLOW_COPY_AND_ASSIGN(Svf);
+  Svf(const Svf &) = delete;
+  const Svf &operator=(const Svf &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_DRUMS_SVF_H_

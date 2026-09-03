@@ -26,8 +26,7 @@
 //
 // Exponential decay excitation.
 
-#ifndef PEAKS_DRUMS_EXCITATION_H_
-#define PEAKS_DRUMS_EXCITATION_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 
@@ -80,9 +79,9 @@ class Excitation {
   int32_t state_;
   int32_t level_;
 
-  DISALLOW_COPY_AND_ASSIGN(Excitation);
+  Excitation(const Excitation &) = delete;
+  const Excitation &operator=(const Excitation &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_DRUMS_EXCITATION_H_

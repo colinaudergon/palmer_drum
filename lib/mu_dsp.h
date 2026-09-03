@@ -26,8 +26,7 @@
 //
 // DSP utility routines.
 
-#ifndef STMLIB_UTILS_DSP_DSP_H_
-#define STMLIB_UTILS_DSP_DSP_H_
+#pragma once
 
 #include "mu_stmlib.h"
 
@@ -164,4 +163,3 @@ inline int16_t SoftConvert(float x) {
 
 }  // namespace stmlib
 
-#endif  // STMLIB_UTILS_DSP_DSP_H_

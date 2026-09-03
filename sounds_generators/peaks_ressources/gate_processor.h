@@ -26,8 +26,7 @@
 //
 // General declarations used by all trigger/gate processors.
 
-#ifndef PEAKS_GATE_PROCESSOR_H_
-#define PEAKS_GATE_PROCESSOR_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 
@@ -66,4 +65,3 @@ inline GateFlags ExtractGateFlags(GateFlags previous, bool current) {
 
 }  // namespace peaks
 
-#endif  // PEAKS_GATE_PROCESSOR_H_

@@ -26,8 +26,7 @@
 //
 // I/O Buffering.
 
-#ifndef PEAKS_IO_BUFFER_H_
-#define PEAKS_IO_BUFFER_H_
+#pragma once
 
 #include "../lib/mu_stdlib.h"
 #include "../sounds_generators/peaks_ressources/gate_processor.h"
@@ -94,9 +93,9 @@ class IOBuffer {
   volatile size_t io_block_;
   volatile size_t render_block_;
   
-  DISALLOW_COPY_AND_ASSIGN(IOBuffer);
+  IOBuffer(const IOBuffer &) = delete;
+  const IOBuffer &operator=(const IOBuffer &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_IO_BUFFER_H_

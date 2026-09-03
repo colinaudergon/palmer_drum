@@ -26,28 +26,28 @@
 //
 // 808-style HH.
 
-#ifndef PEAKS_DRUMS_HIGH_HAT_H_
-#define PEAKS_DRUMS_HIGH_HAT_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 
 #include "svf.h"
 #include "excitation.h"
 
+#include "../i_processor.h"
 #include "../peaks_ressources/gate_processor.h"
 
 namespace peaks
 {
 
-  class HighHat
+  class HighHat : public IProcessor
   {
   public:
     HighHat() {}
-    ~HighHat() {}
+    ~HighHat() override {}
 
-    void Init();
-    void Process(const GateFlags *gate_flags, int16_t *out, size_t size);
-    void Configure(uint16_t *parameter);
+    void Init() override;
+    void Process(const GateFlags *gate_flags, int16_t *out, size_t size) override;
+    void Configure(uint16_t *parameter) override;
 
   private:
     Svf noise_;
@@ -75,9 +75,9 @@ namespace peaks
     static constexpr uint16_t kDefaultResonance = 24000;
     // static constexpr uint16_t kDefaultResonance = 24000;
 
-    DISALLOW_COPY_AND_ASSIGN(HighHat);
+    HighHat(const HighHat &) = delete;
+    const HighHat &operator=(const HighHat &) = delete;
   };
 
 } // namespace peaks
 
-#endif // PEAKS_DRUMS_HIGH_HAT_H_

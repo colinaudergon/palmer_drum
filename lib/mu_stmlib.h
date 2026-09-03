@@ -22,8 +22,7 @@
 // 
 // See http://creativecommons.org/licenses/MIT/ for more information.
 
-#ifndef STMLIB_STMLIB_H_
-#define STMLIB_STMLIB_H_
+#pragma once
 
 #include <inttypes.h>
 #include <stddef.h>
@@ -31,10 +30,6 @@
 #ifndef NULL
 #define NULL 0
 #endif
-
-#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
-  TypeName(const TypeName&);               \
-  void operator=(const TypeName&)
 
 #define CLIP(x) if (x < -32767) x = -32767; if (x > 32767) x = 32767;
 
@@ -111,4 +106,3 @@ struct FourCC {
 
 }  // namespace mu_stmlib
 
-#endif   // STMLIB_STMLIB_H_

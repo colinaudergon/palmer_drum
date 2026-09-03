@@ -26,8 +26,7 @@
 //
 // 808-style snare drum.
  
-#ifndef PEAKS_DRUMS_SNARE_DRUM_H_
-#define PEAKS_DRUMS_SNARE_DRUM_H_
+#pragma once
 
 
 #include "../../lib/mu_stmlib.h"
@@ -37,19 +36,20 @@
 
 #include <cstdio>
 
+#include "../i_processor.h"
 #include "../peaks_ressources/gate_processor.h"
 
 namespace peaks {
 
-class SnareDrum {
+class SnareDrum : public IProcessor {
  public:
   SnareDrum() { }
-  ~SnareDrum() { }
+  ~SnareDrum() override { }
 
-  void Init();
-  void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
+  void Init() override;
+  void Process(const GateFlags* gate_flags, int16_t* out, size_t size) override;
   
-  void Configure(uint16_t* parameter) {
+  void Configure(uint16_t* parameter) override {
       set_frequency(parameter[0] - 32768);
       set_tone(parameter[1]);
       set_snappy(parameter[2]);
@@ -98,9 +98,9 @@ class SnareDrum {
   
   uint16_t snappy_;
 
-  DISALLOW_COPY_AND_ASSIGN(SnareDrum);
+  SnareDrum(const SnareDrum &) = delete;
+  const SnareDrum &operator=(const SnareDrum &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_DRUMS_SNARE_DRUM_H_

@@ -30,8 +30,7 @@
 // make resources
 
 
-#ifndef PEAKS_RESOURCES_H_
-#define PEAKS_RESOURCES_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 // #include "stmlib/stmlib.h"
@@ -106,4 +105,3 @@ extern const int16_t wav_overdrive[];
 
 }  // namespace peaks
 
-#endif  // PEAKS_RESOURCES_H_

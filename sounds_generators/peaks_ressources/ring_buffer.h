@@ -26,8 +26,7 @@
 //
 // Basic ringbuffer template
 
-#ifndef STMLIB_UTILS_RING_BUFFER_H_
-#define STMLIB_UTILS_RING_BUFFER_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 #include <algorithm>
@@ -122,7 +121,8 @@ class RingBuffer {
   volatile size_t read_ptr_;
   volatile size_t write_ptr_;
 
-  DISALLOW_COPY_AND_ASSIGN(RingBuffer);
+  RingBuffer(const RingBuffer &) = delete;
+  const RingBuffer &operator=(const RingBuffer &) = delete;
 };
 
 template<typename T>
@@ -143,9 +143,9 @@ class RingBuffer<T, 0> {
   inline void Overwrite(const T* source, size_t num_elements) { }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RingBuffer);
+  RingBuffer(const RingBuffer &) = delete;
+  const RingBuffer &operator=(const RingBuffer &) = delete;
 };
 
 }  // namespace stmlib
 
-#endif   // STMLIB_UTILS_RING_BUFFER_H_

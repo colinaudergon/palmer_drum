@@ -26,8 +26,7 @@
 //
 // This is the common entry points for all types of modulation sources!
 
-#ifndef PEAKS_PROCESSORS_H_
-#define PEAKS_PROCESSORS_H_
+#pragma once
 
 #include "../lib/mu_stmlib.h"
 
@@ -39,36 +38,21 @@
 #include "drums/high_hat.h"
 #include "number_station/number_station.h"
 
+#include "i_processor.h"
 #include "peaks_ressources/gate_processor.h"
 
 namespace peaks
 {
 
-    enum ProcessorFunction
+    enum class ProcessorFunction: uint8_t
     {
-
-        PROCESSOR_FUNCTION_BASS_DRUM,
-        PROCESSOR_FUNCTION_SNARE_DRUM,
-        PROCESSOR_FUNCTION_HIGH_HAT,
-        PROCESSOR_FUNCTION_FM_DRUM,
-        PROCESSOR_FUNCTION_NUMBER_STATION,
-        PROCESSOR_FUNCTION_LAST
+        kBassDrum,
+        kSnareDrum,
+        kHighHat,
+        kFmDrum,
+        kNumberStation,
+        kLast
     };
-
-#define DECLARE_PROCESSOR(ClassName, variable)                                      \
-    void ClassName##Init()                                                          \
-    {                                                                               \
-        variable.Init();                                                            \
-    }                                                                               \
-    void ClassName##Process(const GateFlags *gate_flags, int16_t *out, size_t size) \
-    {                                                                               \
-        variable.Process(gate_flags, out, size);                                    \
-    }                                                                               \
-    void ClassName##Configure(uint16_t *p)                                          \
-    {                                                                               \
-        variable.Configure(p);                                                      \
-    }                                                                               \
-    ClassName variable;
 
     class Processors
     {
@@ -77,17 +61,6 @@ namespace peaks
         ~Processors() {}
 
         void Init(uint8_t index);
-
-        typedef void (Processors::*InitFn)();
-        typedef void (Processors::*ProcessFn)(const GateFlags *, int16_t *, size_t);
-        typedef void (Processors::*ConfigureFn)(uint16_t *);
-
-        struct ProcessorCallbacks
-        {
-            InitFn init_fn;
-            ProcessFn process_fn;
-            ConfigureFn configure_fn;
-        };
 
         inline void set_parameter(uint8_t index, uint16_t parameter)
         {
@@ -103,7 +76,7 @@ namespace peaks
         inline void set_function(ProcessorFunction function)
         {
             function_ = function;
-            callbacks_ = callbacks_table_[function];
+            current_processor_ = processors_table_[GetProcessorIndexFromFunction(function_)];
             Configure();
         }
 
@@ -111,54 +84,42 @@ namespace peaks
 
         inline void Process(const GateFlags *gate_flags, int16_t *output, size_t size)
         {
-            (this->*callbacks_.process_fn)(gate_flags, output, size);
+            current_processor_->Process(gate_flags, output, size);
         }
 
-        inline const NumberStation &number_station() const { return number_station_; }
 
     private:
         void Configure()
         {
-            // if (function_ == PROCESSOR_FUNCTION_SNARE_DRUM ||
-            //     function_ == PROCESSOR_FUNCTION_HIGH_HAT)
-            // {
-
-            //     uint16_t tone_parameter = parameter_[1];
-            //     uint16_t snappy_parameter = parameter_[2];
-
-            //     if (tone_parameter >= 65000 && snappy_parameter >= 65000)
-            //     {
-            //         if (function_ != PROCESSOR_FUNCTION_HIGH_HAT)
-            //         {
-            //             set_function(PROCESSOR_FUNCTION_HIGH_HAT);
-            //         }
-            //     }
-            //     else if (tone_parameter <= 64500 || snappy_parameter <= 64500)
-            //     {
-            //         if (function_ != PROCESSOR_FUNCTION_SNARE_DRUM)
-            //         {
-            //             set_function(PROCESSOR_FUNCTION_SNARE_DRUM);
-            //         }
-            //     }
-            // }
-            (this->*callbacks_.configure_fn)(&parameter_[0]);
+            current_processor_->Configure(&parameter_[0]);
         }
+
+        inline uint8_t GetProcessorIndexFromFunction(ProcessorFunction processor_function)
+        {
+            return static_cast<uint8_t>(processor_function);
+        }
+
 
         ProcessorFunction function_;
         uint16_t parameter_[4];
 
-        ProcessorCallbacks callbacks_;
-        static const ProcessorCallbacks callbacks_table_[PROCESSOR_FUNCTION_LAST];
+        // Currently-selected processor, dispatched to via a single virtual call
+        // (IProcessor::Process()/Configure()) instead of a hand-built
+        // function-pointer table. All concrete processors below are still
+        // instantiated as plain members (no heap allocation) so switching
+        // function_ is just repointing current_processor_ -- no lifetime or
+        // allocation concerns.
+        IProcessor *current_processor_ = nullptr;
+        IProcessor *processors_table_[static_cast<uint8_t>(ProcessorFunction::kLast)];
 
-        DECLARE_PROCESSOR(BassDrum, bass_drum_);
-        DECLARE_PROCESSOR(SnareDrum, snare_drum_);
-        DECLARE_PROCESSOR(HighHat, high_hat_);
-        DECLARE_PROCESSOR(FmDrum, fm_drum_);
-        DECLARE_PROCESSOR(NumberStation, number_station_);
+        BassDrum bass_drum_;
+        SnareDrum snare_drum_;
+        HighHat high_hat_;
+        FmDrum fm_drum_;
+        NumberStation number_station_;
     };
 
     // extern Processors processors[2];
 
 } // namespace peaks
 
-#endif // PEAKS_PROCESSORS_H_

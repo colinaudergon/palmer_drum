@@ -27,8 +27,7 @@
 // A set of basic operands, especially useful for fixed-point arithmetic, with
 // fast ASM implementations.
 
-#ifndef STMLIB_UTILS_DSP_H_
-#define STMLIB_UTILS_DSP_H_
+#pragma once
 
 #include "mu_stmlib.h"
 
@@ -176,4 +175,3 @@ inline int16_t Crossfade115(
 
 }  // namespace stmlib
 
-#endif  // STMLIB_UTILS_DSP_H_

@@ -26,14 +26,14 @@
 //
 // Number station.
 
-#ifndef PEAKS_NUMBER_STATION_NUMBER_STATION_H_
-#define PEAKS_NUMBER_STATION_NUMBER_STATION_H_
+#pragma once
 
 
 #include "../../lib/mu_stmlib.h"
 #include "../../lib/dsp.h"
 #include "../drums/svf.h"
 
+#include "../i_processor.h"
 #include "../peaks_ressources/gate_processor.h"
 
 
@@ -43,15 +43,15 @@
 
 namespace peaks {
 
-class NumberStation {
+class NumberStation : public IProcessor {
  public:
   NumberStation() { }
-  ~NumberStation() { }
+  ~NumberStation() override { }
   
-  void Init();
-  void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
+  void Init() override;
+  void Process(const GateFlags* gate_flags, int16_t* out, size_t size) override;
   
-  void Configure(uint16_t* parameter) {
+  void Configure(uint16_t* parameter) override {
       set_tone(parameter[0]);
       set_transition_probability(parameter[1]);
       set_noise(parameter[2]);
@@ -110,9 +110,9 @@ class NumberStation {
   Svf lp_;
   Svf hp_;
   
-  DISALLOW_COPY_AND_ASSIGN(NumberStation);
+  NumberStation(const NumberStation &) = delete;
+  const NumberStation &operator=(const NumberStation &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_NUMBER_STATION_NUMBER_STATION_H_

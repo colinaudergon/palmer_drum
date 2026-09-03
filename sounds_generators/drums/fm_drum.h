@@ -26,24 +26,24 @@
 //
 // Sine FM drum - similar to the BD/SD in Anushri.
 
-#ifndef PEAKS_DRUMS_FM_DRUM_H_
-#define PEAKS_DRUMS_FM_DRUM_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
+#include "../i_processor.h"
 #include "../peaks_ressources/gate_processor.h"
 
 
 namespace peaks {
 
-class FmDrum {
+class FmDrum : public IProcessor {
  public:
   FmDrum() { }
-  ~FmDrum() { }
+  ~FmDrum() override { }
   
-  void Init();
-  void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
+  void Init() override;
+  void Process(const GateFlags* gate_flags, int16_t* out, size_t size) override;
 
-  void Configure(uint16_t* parameter) {
+  void Configure(uint16_t* parameter) override {
       set_frequency(parameter[0]);
       set_fm_amount((parameter[1] >> 2) * 3);
       set_decay(parameter[2]);
@@ -102,9 +102,9 @@ class FmDrum {
   uint32_t aux_envelope_phase_;
   uint32_t phase_increment_;
 
-  DISALLOW_COPY_AND_ASSIGN(FmDrum);
+  FmDrum(const FmDrum &) = delete;
+  const FmDrum &operator=(const FmDrum &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_DRUMS_FM_DRUM_H_

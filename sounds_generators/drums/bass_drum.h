@@ -26,27 +26,27 @@
 //
 // 808-style bass drum.
  
-#ifndef PEAKS_DRUMS_BASS_DRUM_H_
-#define PEAKS_DRUMS_BASS_DRUM_H_
+#pragma once
 
 #include "../../lib/mu_stmlib.h"
 
 #include "svf.h"
 #include "excitation.h"
 
+#include "../i_processor.h"
 #include "../peaks_ressources/gate_processor.h"
 
 namespace peaks {
 
-class BassDrum {
+class BassDrum : public IProcessor {
  public:
   BassDrum() { }
-  ~BassDrum() { }
+  ~BassDrum() override { }
 
-  void Init();
-  void Process(const GateFlags* gate_flags, int16_t* out, size_t size);
+  void Init() override;
+  void Process(const GateFlags* gate_flags, int16_t* out, size_t size) override;
   
-  void Configure(uint16_t* parameter) {
+  void Configure(uint16_t* parameter) override {
       set_frequency(parameter[0] - 32768);
       set_punch(parameter[1]);
       set_tone(parameter[2]);
@@ -86,9 +86,9 @@ class BassDrum {
   int32_t lp_coefficient_;
   int32_t lp_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(BassDrum);
+  BassDrum(const BassDrum &) = delete;
+  const BassDrum &operator=(const BassDrum &) = delete;
 };
 
 }  // namespace peaks
 
-#endif  // PEAKS_DRUMS_BASS_DRUM_H_
