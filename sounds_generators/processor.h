@@ -119,7 +119,6 @@ namespace peaks
         NumberStation number_station_;
     };
 
-    // extern Processors processors[2];
 
 } // namespace peaks
 
