@@ -44,3 +44,8 @@ emulator_fs/*
 build_wsl
 build_wsl/*
 # End of https://www.toptal.com/developers/gitignore/api/c++
+.vscode/c_cpp_properties.json
+.vscode/extensions.json
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
