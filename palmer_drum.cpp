@@ -104,12 +104,12 @@ int main()
 
         while (input_event_queue_.TryPop(command))
         {
-            if (command.type == hw_interface::ControlType::CONTROL_GATE)
+            if (command.type == hw_interface::ControlType::kControlGate)
             {
                 ProcessGateInput();
             }
 
-            if (command.type == hw_interface::ControlType::CONTROL_POT)
+            if (command.type == hw_interface::ControlType::kControlPot)
             {
                 processor.set_parameter(command.control_id, command.data);
             }

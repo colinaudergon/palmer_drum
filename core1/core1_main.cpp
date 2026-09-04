@@ -8,7 +8,7 @@
 hw_interface::PicoAdcController adc_controller;
 hw_interface::Leds leds;
 hw_interface::GateInput gate_input(kGateInputGpio);
-hw_interface::GateInput button_input(kButtonGpio);
+hw_interface::ButtonInput button_input(kButtonGpio, kButtonLongPressMs);
 
 namespace
 {
@@ -30,6 +30,7 @@ void Core1Main()
 
     constexpr uint8_t kGateEventId = kNumAdcParameters + 1;
     constexpr uint8_t kButtonEventId = kGateEventId + 1;
+    constexpr uint8_t kButtonHoldEventId = kButtonEventId + 1;
     uint8_t selected_processor = 0;
     
     hw_interface::PicoAdcConfig adc_config = {
@@ -45,19 +46,24 @@ void Core1Main()
     gate_input.Init();
     button_input.Init();
     leds.ShowValue(selected_processor + 1);
-    hw_interface::GateInputState gate_state = hw_interface::GateInputState::kGate;
-    hw_interface::GateInputState button_state = hw_interface::GateInputState::kGate;
+    hw_interface::DigitalInputState gate_state = hw_interface::DigitalInputState::kGate;
+    hw_interface::DigitalInputState button_state = hw_interface::DigitalInputState::kGate;
+    bool button_long_press_state = false;
 
     hw_interface::InputEvent adc_event;
-    adc_event.type = hw_interface::ControlType::CONTROL_POT;
+    adc_event.type = hw_interface::ControlType::kControlPot;
 
     hw_interface::InputEvent gate_event;
-    gate_event.type = hw_interface::ControlType::CONTROL_GATE;
+    gate_event.type = hw_interface::ControlType::kControlGate;
     gate_event.control_id = kGateEventId;
 
     hw_interface::InputEvent button_event;
-    button_event.type = hw_interface::ControlType::CONTROL_SWITCH;
+    button_event.type = hw_interface::ControlType::kControlSwitch;
     button_event.control_id = kButtonEventId;
+
+    hw_interface::InputEvent button_hold_event;
+    button_hold_event.type = hw_interface::ControlType::kControlSwitchHold;
+    button_hold_event.control_id = kButtonHoldEventId;
 
     while (true)
     {
@@ -66,8 +72,8 @@ void Core1Main()
         gate_input.Process();
         button_input.Process();
 
-        hw_interface::GateInputState current_gate_state = gate_input.GetGateState();
-        if (current_gate_state == hw_interface::GateInputState::kRising &&
+        hw_interface::DigitalInputState current_gate_state = gate_input.GetState();
+        if (current_gate_state == hw_interface::DigitalInputState::kRising &&
             current_gate_state != gate_state)
         {
             gate_event.data = static_cast<int32_t>(current_gate_state);
@@ -75,8 +81,8 @@ void Core1Main()
         }
         gate_state = current_gate_state;
 
-        hw_interface::GateInputState current_button_state = button_input.GetGateState();
-        if (current_button_state == hw_interface::GateInputState::kRising &&
+        hw_interface::DigitalInputState current_button_state = button_input.GetState();
+        if (current_button_state == hw_interface::DigitalInputState::kRising &&
             current_button_state != button_state)
         {
             selected_processor = (selected_processor + 1) % kNumberOfProcessors;
@@ -86,6 +92,14 @@ void Core1Main()
             button_event_queue_.TryPush(button_event);
         }
         button_state = current_button_state;
+
+        bool current_button_long_press = button_input.IsLongPress();
+        if (current_button_long_press && !button_long_press_state)
+        {
+            button_hold_event.data = static_cast<int32_t>(selected_processor);
+            button_event_queue_.TryPush(button_hold_event);
+        }
+        button_long_press_state = current_button_long_press;
 
         for (size_t i = 0; i < kNumAdcParameters; ++i)
         {

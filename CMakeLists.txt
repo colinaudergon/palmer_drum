@@ -35,7 +35,8 @@ pico_sdk_init()
 add_subdirectory(hw_interfaces/pwm_audio_codec)
 add_subdirectory(hw_interfaces/pico_adc)
 add_subdirectory(hw_interfaces/Leds)
-add_subdirectory(hw_interfaces/gate_input)
+add_subdirectory(hw_interfaces/digital_input)
+add_subdirectory(hw_interfaces/button_input)
 add_subdirectory(sounds_generators)
 
 # Add executable. Default name is the project name, version 0.1
@@ -57,7 +58,8 @@ target_link_libraries(palmer_drum
         pwm_audio_codec
         pico_adc
         Leds
-        GateInput
+        DigitalInput
+        ButtonInput
         SoundGenerator
         )
 
