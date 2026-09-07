@@ -4933,6 +4933,52 @@
 		)
 	)
 	(sheet
+		(at 71.12 53.975)
+		(size 34.925 39.37)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "2ba57934-c92d-47e7-a815-c9a626bf8835")
+		(property "Sheetname" "INPUT_OUTPUT"
+			(at 71.12 53.2634 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "input_output.kicad_sch"
+			(at 71.12 93.9296 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "palmer_drum"
+				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
 		(at 251.46 140.335)
 		(size 28.575 16.51)
 		(exclude_from_sim no)
