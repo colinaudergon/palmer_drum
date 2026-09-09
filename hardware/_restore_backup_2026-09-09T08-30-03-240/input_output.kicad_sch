@@ -375,6 +375,146 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:R"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "R"
+				(at 2.032 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "R"
+				(at 0 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at -1.778 0 90)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "R res resistor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "R_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "R_0_1"
+				(rectangle
+					(start -1.016 -2.54)
+					(end 1.016 2.54)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "R_1_1"
+				(pin passive line
+					(at 0 3.81 270)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -3.81 90)
+					(length 1.27)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Switch:SW_Push_Dual"
 			(pin_names
 				(offset 1.016)
@@ -916,13 +1056,13 @@
 	)
 	(wire
 		(pts
-			(xy 0.0762 0.0762) (xy 2.6162 0.0762)
+			(xy 100.33 44.45) (xy 100.33 48.26)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "4852b4e5-813b-4d6a-a992-ee2d8ab8377f")
+		(uuid "48fd55c7-1a7e-4695-aa36-b5892600bdd1")
 	)
 	(wire
 		(pts
@@ -1006,6 +1146,16 @@
 	)
 	(wire
 		(pts
+			(xy 88.9 44.45) (xy 88.9 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d1f2ce4-255a-40c1-a6ab-1e4bf1b951ec")
+	)
+	(wire
+		(pts
 			(xy 129.032 102.87) (xy 129.032 100.33)
 		)
 		(stroke
@@ -1023,6 +1173,16 @@
 			(type default)
 		)
 		(uuid "8e59e78a-1ec0-4c45-9f63-2e5e5683833a")
+	)
+	(wire
+		(pts
+			(xy 78.74 44.45) (xy 78.74 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8ea3f936-11bf-4873-ad71-41f2d9b31382")
 	)
 	(wire
 		(pts
@@ -1094,9 +1254,19 @@
 		)
 		(uuid "f1a370a4-5684-4933-8c53-50a1cf28bd93")
 	)
+	(wire
+		(pts
+			(xy 67.31 44.45) (xy 67.31 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "fbe5d4f2-e0bf-4000-9484-8dfa8df9acc0")
+	)
 	(global_label "LED_2_F"
 		(shape input)
-		(at 78.74 55.88 90)
+		(at 78.74 44.45 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1106,7 +1276,7 @@
 		)
 		(uuid "1cb47441-3d07-4e1d-85bb-0e17f2067433")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 78.74 45.2144 90)
+			(at 78.74 33.7844 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1118,7 +1288,7 @@
 			)
 		)
 	)
-	(global_label "LED_PWM_CTRL_F"
+	(global_label "LED_PWM_CTRL"
 		(shape input)
 		(at 62.23 76.2 180)
 		(fields_autoplaced yes)
@@ -1130,7 +1300,7 @@
 		)
 		(uuid "3398cd23-21a1-4542-8948-78b4b77a9c64")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 43.0978 76.2 0)
+			(at 45.154 76.2 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1168,7 +1338,7 @@
 	)
 	(global_label "LED_4_F"
 		(shape output)
-		(at 36.83 54.61 0)
+		(at 29.21 50.8 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1178,7 +1348,7 @@
 		)
 		(uuid "5913fead-d99d-4324-9882-d6b982ba6f30")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 47.4956 54.61 0)
+			(at 39.8756 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1192,7 +1362,7 @@
 	)
 	(global_label "LED_1_F"
 		(shape output)
-		(at 36.83 46.99 0)
+		(at 29.21 43.18 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1202,7 +1372,7 @@
 		)
 		(uuid "59f98e88-e28e-4613-815a-5f53f4e32485")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 47.4956 46.99 0)
+			(at 39.8756 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1216,7 +1386,7 @@
 	)
 	(global_label "LED_4_F"
 		(shape input)
-		(at 100.33 55.88 90)
+		(at 100.33 44.45 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1226,31 +1396,7 @@
 		)
 		(uuid "5df6458f-4ebf-49a8-8f99-42927c3ef2b9")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 100.33 45.2144 90)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-	)
-	(global_label "LED_PWM_CTRL_F"
-		(shape output)
-		(at 36.83 57.15 0)
-		(fields_autoplaced yes)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "6b0b9911-4362-41f5-b946-676fe9cbe8db")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 55.9622 57.15 0)
+			(at 100.33 33.7844 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1264,7 +1410,7 @@
 	)
 	(global_label "LED_2_F"
 		(shape output)
-		(at 36.83 49.53 0)
+		(at 29.21 45.72 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1274,7 +1420,7 @@
 		)
 		(uuid "7aeca944-ab90-44b4-9851-343b85b5f53f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 47.4956 49.53 0)
+			(at 39.8756 45.72 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1336,7 +1482,7 @@
 	)
 	(global_label "LED_3_F"
 		(shape output)
-		(at 36.83 52.07 0)
+		(at 29.21 48.26 0)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1346,7 +1492,7 @@
 		)
 		(uuid "dede02e2-b008-424d-8058-9468e0cb1c53")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 47.4956 52.07 0)
+			(at 39.8756 48.26 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1384,7 +1530,7 @@
 	)
 	(global_label "LED_1_F"
 		(shape input)
-		(at 67.31 55.88 90)
+		(at 67.31 44.45 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1394,7 +1540,7 @@
 		)
 		(uuid "eee8f9a6-b46d-49de-a5c3-30293877fdf6")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 67.31 45.2144 90)
+			(at 67.31 33.7844 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1408,7 +1554,7 @@
 	)
 	(global_label "LED_3_F"
 		(shape input)
-		(at 88.9 55.88 90)
+		(at 88.9 44.45 90)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -1418,7 +1564,7 @@
 		)
 		(uuid "f4706131-d42e-42ce-8c6e-d2dbcae57f20")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 88.9 45.2144 90)
+			(at 88.9 33.7844 90)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1430,20 +1576,9 @@
 			)
 		)
 	)
-	(hierarchical_label "LED_PWM_CTRL_F"
-		(shape input)
-		(at 36.83 57.15 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "2d2d0439-6af6-4b20-94d6-db7cdbd8e0b1")
-	)
 	(hierarchical_label "LED_4_F"
 		(shape input)
-		(at 36.83 54.61 180)
+		(at 29.21 50.8 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1454,7 +1589,7 @@
 	)
 	(hierarchical_label "LED_3_F"
 		(shape input)
-		(at 36.83 52.07 180)
+		(at 29.21 48.26 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1465,7 +1600,7 @@
 	)
 	(hierarchical_label "LED_2_F"
 		(shape input)
-		(at 36.83 49.53 180)
+		(at 29.21 45.72 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1498,7 +1633,7 @@
 	)
 	(hierarchical_label "LED_1_F"
 		(shape input)
-		(at 36.83 46.99 180)
+		(at 29.21 43.18 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1759,6 +1894,88 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 100.33 52.07 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6a6861d6-9ace-4743-974e-675b9e823099")
+		(property "Reference" "R7"
+			(at 102.87 50.7999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100R"
+			(at 102.87 53.3399 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+			(at 98.552 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 100.33 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 100.33 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "f6f931a2-0be9-4f11-864f-5071cfd51fae")
+		)
+		(pin "1"
+			(uuid "a8f39f46-2752-47c5-a3f7-45e49f6e8465")
+		)
+		(instances
+			(project "palmer_drum"
+				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/2ba57934-c92d-47e7-a815-c9a626bf8835"
+					(reference "R7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 71.12 127 0)
 		(unit 1)
@@ -1923,6 +2140,170 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 88.9 52.07 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8affe03d-150a-4c81-a417-684c98f37fa9")
+		(property "Reference" "R6"
+			(at 91.44 50.7999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100R"
+			(at 91.44 53.3399 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+			(at 87.122 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 88.9 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 88.9 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "6d70f33b-6076-4cda-a1c7-abc9b3ca2531")
+		)
+		(pin "1"
+			(uuid "fc9c0957-9477-4f80-bbc6-50d6f2d64a76")
+		)
+		(instances
+			(project "palmer_drum"
+				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/2ba57934-c92d-47e7-a815-c9a626bf8835"
+					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 78.74 52.07 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "8d7ca56f-fa46-47de-83a3-8958676063c1")
+		(property "Reference" "R5"
+			(at 81.28 50.7999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100R"
+			(at 81.28 53.3399 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+			(at 76.962 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 78.74 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 78.74 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "ba7d7da2-4e8d-4940-b12a-03e5052bff43")
+		)
+		(pin "1"
+			(uuid "1e285479-d792-4881-a699-7c8a59600d58")
+		)
+		(instances
+			(project "palmer_drum"
+				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/2ba57934-c92d-47e7-a815-c9a626bf8835"
+					(reference "R5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:LED")
 		(at 88.9 63.5 90)
 		(unit 1)
@@ -2010,6 +2391,88 @@
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/2ba57934-c92d-47e7-a815-c9a626bf8835"
 					(reference "D5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 67.31 52.07 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "b796d259-4ae2-45a3-8898-7ebe80b57d04")
+		(property "Reference" "R4"
+			(at 69.85 50.7999 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100R"
+			(at 69.85 53.3399 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_THT:TO-92_Inline"
+			(at 65.532 52.07 90)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 67.31 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 67.31 52.07 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "2"
+			(uuid "75644590-af6e-4595-bb1d-44b9c18e54d3")
+		)
+		(pin "1"
+			(uuid "26eb52a4-e2fa-4fd1-8934-cfbfe3875594")
+		)
+		(instances
+			(project "palmer_drum"
+				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/2ba57934-c92d-47e7-a815-c9a626bf8835"
+					(reference "R4")
 					(unit 1)
 				)
 			)
