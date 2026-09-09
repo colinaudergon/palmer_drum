@@ -8,4 +8,5 @@ target_include_directories(Leds PUBLIC
 
 target_link_libraries(Leds PUBLIC
         pico_stdlib
+        hardware_pwm
 )
