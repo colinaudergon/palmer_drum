@@ -1333,7 +1333,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "1af2278e-8284-415d-9461-f1a9707aaeb8")
-		(property "Reference" "#PWR042"
+		(property "Reference" "#PWR026"
 			(at 154.94 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -1393,7 +1393,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "#PWR042")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -1410,7 +1410,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "2dba756d-7b3e-4510-9a1a-c83c917bd65b")
-		(property "Reference" "R13"
+		(property "Reference" "R2"
 			(at 122.936 66.294 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1472,7 +1472,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R13")
+					(reference "R2")
 					(unit 1)
 				)
 			)
@@ -1490,7 +1490,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "43addb9f-a48b-41ab-b834-1292875b4202")
-		(property "Reference" "C16"
+		(property "Reference" "C8"
 			(at 120.65 74.9299 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1554,7 +1554,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "C16")
+					(reference "C8")
 					(unit 1)
 				)
 			)
@@ -1571,7 +1571,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "5f73c042-a939-4fd6-8ed2-fbb84b01793c")
-		(property "Reference" "R12"
+		(property "Reference" "R1"
 			(at 97.536 66.294 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1633,7 +1633,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R12")
+					(reference "R1")
 					(unit 1)
 				)
 			)
@@ -1650,7 +1650,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "61b89980-cccd-4356-a7e9-c604dde0a48d")
-		(property "Reference" "C18"
+		(property "Reference" "C10"
 			(at 146.05 74.9299 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1714,7 +1714,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "C18")
+					(reference "C10")
 					(unit 1)
 				)
 			)
@@ -1732,7 +1732,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "663f695e-b8c4-4540-9e01-851603344e69")
-		(property "Reference" "R15"
+		(property "Reference" "R4"
 			(at 167.386 89.154 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1794,7 +1794,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R15")
+					(reference "R4")
 					(unit 1)
 				)
 			)
@@ -1811,7 +1811,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8d1089c3-9946-49d1-88b2-dc07d0502373")
-		(property "Reference" "C17"
+		(property "Reference" "C9"
 			(at 133.35 74.9299 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1875,7 +1875,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "C17")
+					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -1894,7 +1894,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "94d7568f-f025-442f-a260-b58498024257")
-		(property "Reference" "#PWR041"
+		(property "Reference" "#PWR025"
 			(at 142.24 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -1954,7 +1954,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "#PWR041")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -1971,7 +1971,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "953b7325-bdc3-4ac6-ae05-ec5d753254ce")
-		(property "Reference" "C19"
+		(property "Reference" "C11"
 			(at 150.622 62.992 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2035,7 +2035,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "C19")
+					(reference "C11")
 					(unit 1)
 				)
 			)
@@ -2053,7 +2053,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a549d92c-019e-49c4-98d6-68c4e0fd8e6d")
-		(property "Reference" "JP3"
+		(property "Reference" "JP1"
 			(at 130.81 86.3599 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2117,7 +2117,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "JP3")
+					(reference "JP1")
 					(unit 1)
 				)
 			)
@@ -2135,7 +2135,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "a8a3deaa-c4fb-4134-9c98-8e9b2855ef93")
-		(property "Reference" "R16"
+		(property "Reference" "R5"
 			(at 174.244 78.994 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2197,7 +2197,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R16")
+					(reference "R5")
 					(unit 1)
 				)
 			)
@@ -2214,7 +2214,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b2fe6d87-89ab-4f9d-afeb-2349a4966c71")
-		(property "Reference" "R17"
+		(property "Reference" "R6"
 			(at 194.056 68.834 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2276,7 +2276,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R17")
+					(reference "R6")
 					(unit 1)
 				)
 			)
@@ -2294,7 +2294,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b888ae52-05dd-4e42-97ac-0ba82a045f63")
-		(property "Reference" "U1"
+		(property "Reference" "U2"
 			(at 175.26 60.96 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2374,7 +2374,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "U1")
+					(reference "U2")
 					(unit 1)
 				)
 			)
@@ -2393,7 +2393,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "bbe8512a-73ae-49fd-88ca-9dd3e3e20815")
-		(property "Reference" "#PWR043"
+		(property "Reference" "#PWR027"
 			(at 165.1 99.06 0)
 			(hide yes)
 			(show_name no)
@@ -2453,7 +2453,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "#PWR043")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -2471,7 +2471,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c821d46e-95d3-4b38-91c3-95256bb84cd1")
-		(property "Reference" "C15"
+		(property "Reference" "C7"
 			(at 107.95 74.9299 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2535,7 +2535,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "C15")
+					(reference "C7")
 					(unit 1)
 				)
 			)
@@ -2554,7 +2554,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "caedd239-62da-46e4-b6ec-bba34a1790d8")
-		(property "Reference" "#PWR040"
+		(property "Reference" "#PWR024"
 			(at 129.54 96.52 0)
 			(hide yes)
 			(show_name no)
@@ -2614,7 +2614,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "#PWR040")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -2632,7 +2632,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f347e6f5-ecbe-45b1-855e-b7c629c4f144")
-		(property "Reference" "#PWR039"
+		(property "Reference" "#PWR023"
 			(at 104.14 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -2692,7 +2692,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "#PWR039")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -2710,7 +2710,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "f3ce46ae-81aa-4912-8240-90592720c932")
-		(property "Reference" "R14"
+		(property "Reference" "R3"
 			(at 157.226 76.454 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2772,7 +2772,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "R14")
+					(reference "R3")
 					(unit 1)
 				)
 			)
@@ -2790,7 +2790,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fbf6fa3d-bed1-46d1-bc5f-1738a136d797")
-		(property "Reference" "JP4"
+		(property "Reference" "JP2"
 			(at 148.59 52.07 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -2852,7 +2852,7 @@
 		(instances
 			(project "palmer_drum"
 				(path "/a1c8c82f-599d-4a64-8030-47d97f65a492/38458225-59a2-4264-a646-d13f499181f7"
-					(reference "JP4")
+					(reference "JP2")
 					(unit 1)
 				)
 			)
