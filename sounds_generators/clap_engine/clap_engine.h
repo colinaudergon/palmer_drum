@@ -125,6 +125,13 @@ namespace peaks
     }
 
 
+    // `spread` (0..65535) controls how much randomness is injected into
+    // each new grain: start position and playback rate (see
+    // RandomizedStartPosition()/RandomizedPhaseIncrement()), duration
+    // (see RandomizedGrainDuration()), and now also the probability that
+    // a grain reads its source backwards (see RandomizedReverse()) -- 0%
+    // of grains reversed at spread == 0, up to effectively all of them at
+    // spread == 65535.
     void set_spread(uint16_t spread)
     {
       spread_ = spread;
@@ -191,6 +198,14 @@ namespace peaks
     // overall decay envelope (see set_decay()), spread_ is what controls
     // per-grain duration variance.
     uint32_t RandomizedGrainDuration() const;
+
+    // Decides whether the next grain should read its source in reverse.
+    // spread_ acts as a probability (0 == never, 65535 == almost always),
+    // but mapped through a squared ("log taper") curve rather than
+    // linearly: reverse grains stay rare across most of spread_'s range
+    // and only become common as it approaches its maximum. See the .cpp
+    // for the exact curve.
+    bool RandomizedReverse() const;
 
     // Nominal (native-pitch) playback rate: GrainSource reads one source
     // sample per output sample.

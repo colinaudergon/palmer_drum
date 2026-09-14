@@ -109,12 +109,14 @@ namespace peaks
     uint16_t start_pos = RandomizedStartPosition();
     uint32_t rate = RandomizedPhaseIncrement();
     const uint32_t grain_duration_samples = RandomizedGrainDuration();
+    const bool reverse = RandomizedReverse();
 
     size_t chosen_n = mu_stmlib::Random::GetWord() % sample_table_.active_count();
     grain_essence_.set_sample_index(sample_table_.NthActiveIndex(chosen_n));
     grain_essence_.set_start_position(start_pos);
     grain_essence_.set_phase_increment(rate);
     grain_essence_.set_duration_samples(grain_duration_samples);
+    grain_essence_.set_reverse(reverse);
 
     // The per-grain trapezoidal envelope only shapes that individual
     // grain's attack/release (click-free fade in/out); it always ramps
@@ -192,6 +194,26 @@ namespace peaks
       duration = kMaxDuration;
     }
     return static_cast<uint32_t>(duration);
+  }
+
+  bool ClapEngine::RandomizedReverse() const
+  {
+    // Squaring spread_ before using it as a probability threshold gives a
+    // "log taper" feel (as in an audio-taper potentiometer): across most
+    // of the lower/middle range very few grains reverse, and the
+    // proportion only ramps up quickly near the top of the range. Linear
+    // (threshold == spread_) would instead make the reverse probability
+    // grow in lockstep with the knob the whole way, which is too eager
+    // early on.
+    //
+    // spread_ * spread_ fits comfortably in 32 bits (max ~65535^2 =~
+    // 4.29e9), and dividing by 65535 rescales the result back down to a
+    // 0..65535 threshold, comparable against GetWord()'s uniformly
+    // distributed low 16 bits.
+    const uint32_t threshold =
+        (static_cast<uint32_t>(spread_) * spread_) / 65535u;
+    uint16_t random_word = static_cast<uint16_t>(mu_stmlib::Random::GetWord());
+    return random_word < threshold;
   }
 
 } // namespace peaks
