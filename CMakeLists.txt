@@ -48,7 +48,7 @@ pico_set_program_version(palmer_drum "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(palmer_drum 1)
-pico_enable_stdio_usb(palmer_drum 0)
+pico_enable_stdio_usb(palmer_drum 1)
 
 # Add the standard library to the build
 target_link_libraries(palmer_drum

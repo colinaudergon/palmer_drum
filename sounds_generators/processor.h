@@ -37,6 +37,7 @@
 #include "drums/snare_drum.h"
 #include "drums/high_hat.h"
 #include "number_station/number_station.h"
+#include "clap_engine/clap_engine.h"
 
 #include "i_processor.h"
 #include "peaks_ressources/gate_processor.h"
@@ -44,9 +45,12 @@
 namespace peaks
 {
 
+    // kBassDrum is listed first (index 0) so that it is the default
+    // processor selected by Processors::Init().
     enum class ProcessorFunction: uint8_t
     {
         kBassDrum,
+        kClapEngine,
         kSnareDrum,
         kHighHat,
         kFmDrum,
@@ -117,6 +121,7 @@ namespace peaks
         HighHat high_hat_;
         FmDrum fm_drum_;
         NumberStation number_station_;
+        ClapEngine clap_engine_;
     };
 
 

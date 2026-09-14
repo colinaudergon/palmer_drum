@@ -9,6 +9,11 @@ number_station/number_station.cpp
 peaks_ressources/random.cpp
 peaks_ressources/resources.cpp
 
+clap_engine/clap_engine.cpp
+clap_engine/engine/grain_source.cpp
+clap_engine/engine/grain.cpp
+
+
 processor.cpp
 
 )

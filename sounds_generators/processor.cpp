@@ -36,6 +36,7 @@ namespace peaks
 
   void Processors::Init(uint8_t index)
   {
+    processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kClapEngine)] = &clap_engine_;
     processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kBassDrum)] = &bass_drum_;
     processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kSnareDrum)] = &snare_drum_;
     processors_table_[GetProcessorIndexFromFunction(ProcessorFunction::kHighHat)] = &high_hat_;
@@ -51,7 +52,7 @@ namespace peaks
     number_station_.set_voice(index == 1);
 
     std::fill(&parameter_[0], &parameter_[4], 32768);
-    set_function(ProcessorFunction::kBassDrum);
+    set_function(ProcessorFunction::kClapEngine);
     // set_function(kNumberStation);
   }
 } // namespace peaks
