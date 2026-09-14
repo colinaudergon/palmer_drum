@@ -50,11 +50,11 @@ namespace peaks
     enum class ProcessorFunction: uint8_t
     {
         kBassDrum,
-        kClapEngine,
         kSnareDrum,
         kHighHat,
         kFmDrum,
         kNumberStation,
+        kClapEngine,
         kLast
     };
 

@@ -149,6 +149,7 @@ namespace peaks
             sample_index_(0),
             start_position_(0),
             phase_increment_(1UL << kFractionalBits),
+            duration_samples_(0xFFFFFFFFUL),
             reverse_(false) {}
 
       // Registers the shared bank of samples grains initialized from this
@@ -190,17 +191,32 @@ namespace peaks
 
       inline void set_reverse(bool reverse) { reverse_ = reverse; }
 
+      // How many output samples this grain should play for, regardless of
+      // how much of the underlying sample buffer would otherwise be
+      // available -- this is what turns "play the whole sample" into "play
+      // a short burst/grain" as described in Bencina's article (a grain's
+      // duration is independent of its source material's length). Defaults
+      // to 0xFFFFFFFF (effectively unbounded), so a grain that's never had
+      // this set behaves exactly as before: it plays until the underlying
+      // sample data itself is exhausted.
+      inline void set_duration_samples(uint32_t duration_samples)
+      {
+        duration_samples_ = duration_samples;
+      }
+
       inline const SampleTable *sample_table() const { return sample_table_; }
       inline uint16_t sample_index() const { return sample_index_; }
       inline uint16_t start_position() const { return start_position_; }
       inline uint32_t phase_increment() const { return phase_increment_; }
       inline bool reverse() const { return reverse_; }
+      inline uint32_t duration_samples() const { return duration_samples_; }
 
     private:
       const SampleTable *sample_table_;
       uint16_t sample_index_;
       uint16_t start_position_;
       uint32_t phase_increment_;
+      uint32_t duration_samples_;
       bool reverse_;
     };
 
@@ -243,6 +259,11 @@ namespace peaks
     uint32_t size_;        // Sample count of data_.
     uint32_t phase_;           // Q24.8 fixed-point read position, in samples.
     uint32_t phase_increment_; // Q24.8 fixed-point playback rate.
+    uint32_t remaining_duration_; // Output samples left to play before this
+                                   // grain self-retires, independent of how
+                                   // much source material remains -- this is
+                                   // what bounds a grain to a short burst
+                                   // instead of playing the whole sample.
     bool reverse_;
     bool done_;
 

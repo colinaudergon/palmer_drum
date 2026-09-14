@@ -15,7 +15,7 @@ namespace
     constexpr size_t kNumAdcParameters = 4;
     constexpr float kAdcMaxValue = 4095.0f;        // 12-bit raw ADC counts
     constexpr float kParameterMaxValue = 65535.0f; // Processors::set_parameter's uint16_t range
-    constexpr uint8_t kNumberOfProcessors = 5;
+    constexpr uint8_t kNumberOfProcessors = 6;
     // Rescales a raw ADC reading (0..kAdcMaxValue) to the processor's parameter range.
     uint16_t AdcToParameter(float adc_value)
     {

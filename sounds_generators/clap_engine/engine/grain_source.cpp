@@ -11,6 +11,7 @@ namespace peaks
     size_ = 0;
     phase_ = 0;
     phase_increment_ = 1UL << kFractionalBits;
+    remaining_duration_ = 0;
     reverse_ = false;
     done_ = true;
   }
@@ -19,6 +20,7 @@ namespace peaks
   {
     phase_increment_ = essence.phase_increment();
     reverse_ = essence.reverse();
+    remaining_duration_ = essence.duration_samples();
 
     const SampleTable *sample_table = essence.sample_table();
     const uint16_t sample_index = essence.sample_index();
@@ -33,7 +35,7 @@ namespace peaks
     data_ = sample_selected ? sample_table->data(sample_index) : nullptr;
     size_ = sample_selected ? static_cast<uint32_t>(sample_table->size(sample_index)) : 0;
 
-    done_ = data_ == nullptr || size_ <= 1;
+    done_ = data_ == nullptr || size_ <= 1 || remaining_duration_ == 0;
 
     if (done_)
     {
@@ -68,6 +70,17 @@ namespace peaks
     int32_t b = (index + 1 < size_) ? data_[index + 1] : data_[index];
     int16_t sample = static_cast<int16_t>(
         a + ((b - a) * static_cast<int32_t>(frac) >> kFractionalBits));
+
+    // A grain's duration is counted in output samples, independent of how
+    // fast phase_ is advancing through the source material (i.e.
+    // independent of phase_increment_/pitch) -- this is what lets a grain
+    // play only a short burst of a sample rather than the whole thing.
+    --remaining_duration_;
+    if (remaining_duration_ == 0)
+    {
+      done_ = true;
+      return sample;
+    }
 
     // Advance the read position and detect exhaustion of the source
     // material, in either playback direction.
