@@ -33,8 +33,12 @@ namespace peaks
 
   void ClapEngine::Init()
   {
-    source_ = kDefaultSourceMask;
-    sample_table_.Init(source_);
+    // pot_value == 0 gives each ISampleTable implementation's own sane
+    // default active set (e.g. SampleTable selects just kSamples[0];
+    // SampleTableFromBins selects just flattened bin 0) -- see
+    // ISampleTable::MapPotToActiveMask().
+    source_ = sample_table_->MapPotToActiveMask(0);
+    sample_table_->Init(source_);
     density_ = 0;
     mean_interonset_samples_ = kSampleRate; // matches set_density(0)'s result
     spread_ = 0;
@@ -42,7 +46,7 @@ namespace peaks
     samples_until_next_grain_ = 0; // fire the first grain immediately
     envelope_ = 0;                 // silent until the first gate trigger
     set_decay(0);                  // initializes envelope_decrement_
-    grain_essence_.set_sample_table(&sample_table_);
+    grain_essence_.set_sample_table(sample_table_);
 
   }
 
@@ -144,8 +148,16 @@ namespace peaks
     const uint32_t grain_duration_samples = RandomizedGrainDuration();
     const bool reverse = RandomizedReverse();
 
-    size_t chosen_n = mu_stmlib::Random::GetWord() % sample_table_.active_count();
-    grain_essence_.set_sample_index(sample_table_.NthActiveIndex(chosen_n));
+    const size_t active_count = sample_table_->active_count();
+    if (active_count == 0)
+    {
+      // Nothing is currently selectable (e.g. a SampleTableFromBins that
+      // hasn't had SetSampleBins() called yet) -- drop this onset rather
+      // than divide by zero below.
+      return;
+    }
+    size_t chosen_n = mu_stmlib::Random::GetWord() % active_count;
+    grain_essence_.set_sample_index(sample_table_->NthActiveIndex(chosen_n));
     grain_essence_.set_start_position(start_pos);
     grain_essence_.set_phase_increment(rate);
     grain_essence_.set_duration_samples(grain_duration_samples);

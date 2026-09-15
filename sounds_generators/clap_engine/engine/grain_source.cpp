@@ -5,6 +5,48 @@
 namespace peaks
 {
 
+  // Defined out-of-line so this is SampleTable's "key function" (see the
+  // comment on data()'s declaration in grain_source.h) -- pins the vtable,
+  // and the one real copy of kSamples-referencing code, to this single
+  // translation unit.
+  const int16_t *SampleTable::data(size_t index) const
+  {
+    return index < kNsamples ? kSamples[index].samples : nullptr;
+  }
+
+  size_t SampleTable::size(size_t index) const
+  {
+    return index < kNsamples ? kSamples[index].lenght : 0;
+  }
+
+  uint32_t SampleTable::MapPotToActiveMask(uint16_t pot_value) const
+  {
+    if (pot_value < kSourceRangeHalf)
+    {
+      uint32_t index =
+          (static_cast<uint32_t>(pot_value) * kNsamples) / kSourceRangeHalf;
+      if (index >= kNsamples)
+      {
+        index = kNsamples - 1;
+      }
+      return 1u << index;
+    }
+
+    const uint32_t relative = pot_value - kSourceRangeHalf;
+    // kSourceRangeHalf == 65536 - kSourceRangeHalf, i.e. both halves of
+    // the uint16_t range are the same size.
+    uint32_t combo_index = (relative * kNumOtherCombos) / kSourceRangeHalf;
+    if (combo_index >= kNumOtherCombos)
+    {
+      combo_index = kNumOtherCombos - 1;
+    }
+    // O(1) table lookup -- see kMultiSampleMasks -- so turning the pot
+    // rapidly (or a noisy/jittery ADC re-sending the same reading many
+    // times) never costs more than a single array access, however far
+    // into the "combinations" half of the range it lands.
+    return kMultiSampleMasks[combo_index];
+  }
+
   void GrainSource::Reset()
   {
     data_ = nullptr;
@@ -22,7 +64,7 @@ namespace peaks
     reverse_ = essence.reverse();
     remaining_duration_ = essence.duration_samples();
 
-    const SampleTable *sample_table = essence.sample_table();
+    const ISampleTable *sample_table = essence.sample_table();
     const uint16_t sample_index = essence.sample_index();
 
     // Resolve (and cache) which underlying buffer this grain reads from.

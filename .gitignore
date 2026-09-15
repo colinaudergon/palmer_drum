@@ -3,6 +3,10 @@ build-*
 !.vscode/*
 disk.img
 
+# Python virtual environments
+.venv
+venv
+
 # Created by https://www.toptal.com/developers/gitignore/api/c++
 # Edit at https://www.toptal.com/developers/gitignore?templates=c++
 

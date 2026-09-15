@@ -2,8 +2,6 @@
 // sample based clap engine
 #pragma once
 
-#include <array>
-
 #include "../../lib/mu_stmlib.h"
 #include "../../lib/dsp.h"
 
@@ -12,6 +10,7 @@
 #include "samples/samples.h"
 #include "engine/grain.h"
 #include "engine/grain_source.h"
+#include "engine/i_sample_table.h"
 #include "engine/envelope.h"
 #include "../peaks_ressources/random.h"
 #include "engine/lut_neg_log.h"
@@ -19,41 +18,15 @@
 namespace peaks
 {
 
-  namespace clap_engine_internal
-  {
-    // Builds, at compile time, the table mapping each 0-based index in
-    // [0, kNumMultiSampleMasks) to the index-th bitmask (in ascending
-    // numeric order) among all masks over kNsamples bits that have two or
-    // more bits set -- i.e. every sample combination not reachable as a
-    // single sample (see ClapEngine::set_source()). Computing this once
-    // at compile time (rather than scanning candidate masks every time
-    // set_source() is called) means a rapid pot sweep, or a noisy ADC
-    // re-sending readings, can never cost more than a single array
-    // lookup at runtime -- important since set_source() runs on the same
-    // core that also keeps the audio codec's DMA buffer fed.
-    constexpr uint32_t kAllSamplesMask =
-        static_cast<uint32_t>((1u << kNsamples) - 1);
-    constexpr uint32_t kNumMultiSampleMasks = kAllSamplesMask - kNsamples;
-
-    constexpr std::array<uint16_t, kNumMultiSampleMasks> BuildMultiSampleMasks()
-    {
-      std::array<uint16_t, kNumMultiSampleMasks> masks{};
-      size_t count = 0;
-      for (uint32_t mask = 1; mask <= kAllSamplesMask; ++mask)
-      {
-        if (__builtin_popcount(mask) >= 2)
-        {
-          masks[count++] = static_cast<uint16_t>(mask);
-        }
-      }
-      return masks;
-    }
-  } // namespace clap_engine_internal
-
   class ClapEngine : public IProcessor
   {
   public:
-    ClapEngine() {}
+    // sample_table is the ISampleTable this engine's grains select from
+    // (SampleTable, SampleTableFromBins, ...) -- injected rather than
+    // owned, so the same ClapEngine implementation can be reused with
+    // different table implementations/data (see ClapEngineFromBins in
+    // processor.h). The referenced table must outlive this ClapEngine.
+    explicit ClapEngine(ISampleTable &sample_table) : sample_table_(&sample_table) {}
     ~ClapEngine() override {}
 
     void Init() override;
@@ -68,54 +41,15 @@ namespace peaks
     }
 
   private:
-    // `source` arrives as a uint16_t but in practice originates from a
-    // 12-bit ADC reading scaled up to the full uint16_t range (see
-    // AdcToParameter() in core1_main.cpp), so only ~4096 distinct raw
-    // values are ever actually seen. The mapping below is designed to
-    // degrade gracefully with that coarser resolution rather than assume
-    // every one of the 65536 possible values is reachable.
-    //
-    // The pot's travel is split into two halves:
-    //  - The first half ([0, kSourceRangeHalf)) sweeps through the
-    //    kNsamples (12) original samples one at a time -- each position
-    //    selects exactly one of kSamples[0..11] as the sole active
-    //    source.
-    //  - The second half ([kSourceRangeHalf, 65535]) sweeps through
-    //    every other possible combination of two or more samples played
-    //    together (i.e. every bitmask over the 12 samples except the
-    //    empty set and the 12 singles already covered by the first
-    //    half).
+    // Delegates entirely to sample_table_'s own MapPotToActiveMask() --
+    // what a given pot_value actually selects (a whole sample, a single
+    // bin, ...) is specific to whichever ISampleTable implementation was
+    // injected at construction, so ClapEngine itself no longer needs to
+    // know anything about that layout.
     void set_source(uint16_t source)
     {
-      if (source < kSourceRangeHalf)
-      {
-        uint32_t index =
-            (static_cast<uint32_t>(source) * kNsamples) / kSourceRangeHalf;
-        if (index >= kNsamples)
-        {
-          index = kNsamples - 1;
-        }
-        source_ = static_cast<uint16_t>(1u << index);
-      }
-      else
-      {
-        const uint32_t relative = source - kSourceRangeHalf;
-        // kSourceRangeHalf == 65536 - kSourceRangeHalf, i.e. both halves
-        // of the uint16_t range are the same size.
-        uint32_t combo_index =
-            (relative * kNumOtherCombos) / kSourceRangeHalf;
-        if (combo_index >= kNumOtherCombos)
-        {
-          combo_index = kNumOtherCombos - 1;
-        }
-        // O(1) table lookup -- see kMultiSampleMasks -- so turning the
-        // pot rapidly (or a noisy/jittery ADC re-sending the same
-        // reading many times) never costs more than a single array
-        // access, however far into the "combinations" half of the range
-        // it lands.
-        source_ = kMultiSampleMasks[combo_index];
-      }
-      sample_table_.Init(source_);
+      source_ = sample_table_->MapPotToActiveMask(source);
+      sample_table_->Init(source_);
     }
     
     void set_density(uint16_t density)
@@ -296,35 +230,19 @@ namespace peaks
     static constexpr uint32_t kMinDecaySamples = kSampleRate / 20;      // 50ms
     static constexpr uint32_t kMaxDecaySamples = kSampleRate * 3;       // 3s
 
-    static constexpr uint16_t kSourceMask =
-        static_cast<uint16_t>((1u << kNsamples) - 1);
-
-    // Midpoint of the uint16_t parameter range, splitting set_source()'s
-    // input into the "single sample" first half and the "combination"
-    // second half. Both halves are the same size (65536 - kSourceRangeHalf
-    // == kSourceRangeHalf).
-    static constexpr uint32_t kSourceRangeHalf = 1UL << 15;
-
-    // Number of distinct multi-sample combinations available in the
-    // second half of the source pot's range: every non-empty bitmask over
-    // the kNsamples samples (kSourceMask of them), minus the kNsamples
-    // single-bit masks already covered by the first half. Must match
-    // clap_engine_internal::kNumMultiSampleMasks (computed the same way).
-    static constexpr uint32_t kNumOtherCombos =
-        clap_engine_internal::kNumMultiSampleMasks;
-
-    // See clap_engine_internal::BuildMultiSampleMasks().
-    static constexpr std::array<uint16_t, kNumOtherCombos> kMultiSampleMasks =
-        clap_engine_internal::BuildMultiSampleMasks();
-
-    // Bitmask selecting only kSamples[0] -- the fallback when set_source()
-    // is called with 0 (i.e. no bits explicitly set).
-    static constexpr uint16_t kDefaultSourceMask = 1u;
-    uint16_t source_;
+    // Currently active mask, as returned by sample_table_->
+    // MapPotToActiveMask() -- meaning is entirely up to whichever
+    // ISampleTable implementation was injected at construction. Widened
+    // to uint32_t (rather than the classic SampleTable's 16-bit,
+    // 12-sample bitmask) so it can also hold a SampleTableFromBins mask,
+    // which may use up to 32 bits.
+    uint32_t source_;
     static constexpr uint32_t kNegLogFractionalBits = 12;
     static constexpr size_t kNGrains = 12;
 
-    SampleTable sample_table_;
+    // Not owned: see the constructor's comment. Never rebound after
+    // construction.
+    ISampleTable *sample_table_;
     GrainSource::Essence grain_essence_;
     Envelope::Essence envelope_essence_;
     Grain grain_pool_[kNGrains];

@@ -11,6 +11,7 @@ peaks_ressources/resources.cpp
 
 clap_engine/clap_engine.cpp
 clap_engine/engine/grain_source.cpp
+clap_engine/engine/sample_table_from_bins.cpp
 clap_engine/engine/grain.cpp
 clap_engine/engine/envelope.cpp
 
