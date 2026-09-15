@@ -90,7 +90,11 @@ Shortwave "numbers station" voice generator.
 ### Clap Engine (`kClapEngine`) — `sounds_generators/clap_engine/clap_engine.h`
 
 Granular sample-playback ("clap") engine: on each gate trigger, short bursts ("grains") of one or more built-in
-samples are triggered stochastically for as long as a decaying envelope stays open.
+samples are triggered stochastically for as long as a decaying envelope stays open. Its architecture (Source/Grain/
+Scheduler roles, the Essence pattern for grain initialization parameters, and the Poisson-process interonset-time
+scheduling) follows Ross Bencina's
+["Implementing Real-Time Granular Synthesis"](https://www.rossbencina.com/writings) (*Audio Anecdotes III*,
+2001-2002) — see the `sounds_generators/clap_engine/engine/` sources for direct references to the article.
 
 | Parameter | ADC   | Function |
 |-----------|-------|----------|
@@ -173,3 +177,19 @@ flashed to the RP2040 by putting the board into BOOTSEL mode and copying the `.u
   respectively.
 - The system clock is set to 176 MHz (`set_sys_clock_khz(176000, true)`) in `palmer_drum.cpp` to support the audio
   timing requirements of the PWM codec.
+
+## License
+
+This project is licensed under the MIT License — see [`LICENSE`](LICENSE).
+
+Portions of this codebase are ported/adapted from
+[Mutable Instruments' Peaks](https://github.com/pichenettes/eurorack) firmware, © Emilie Gillet, also MIT-licensed.
+Files that originate from or are substantially derived from that codebase retain Emilie Gillet's original copyright
+notice in their header comment; files that heavily build on or restructure that original code additionally credit
+`colinaudergon` as a modifier in the same header. Files without any Mutable Instruments/Peaks lineage (the RP2040
+hardware drivers, the granular `clap_engine` — designed and written by `colinaudergon` — application glue code, and
+the `Scripts/` authoring tools) carry a plain `colinaudergon` copyright header instead.
+
+`hw_interfaces/pico_adc/{include,src}/running_median.{h,cpp}` are adapted from Rob Tillaart's
+[RunningMedian](https://github.com/RobTillaart/RunningMedian) library (also MIT-licensed) and retain his original
+copyright notice, with `colinaudergon` credited as the adapter for this project's Pico SDK port.

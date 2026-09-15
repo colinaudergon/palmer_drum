@@ -1,4 +1,5 @@
 // Auto-generated from 'Perc_3.wav' by Scripts/wav_to_header.py
+// Copyright 2026 colinaudergon. Licensed under the MIT License; see the repository's LICENSE file.
 // Source: 44100Hz, 2ch, int32 -> 44100Hz mono int16, split into 16 bin(s)
 // Do not edit by hand; regenerate from the source .wav instead.
 #pragma once
