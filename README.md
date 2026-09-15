@@ -16,12 +16,88 @@ is also ported here alongside the drum voices.
   - `drums/` — bass drum, snare drum, hi-hat (FM drum) voice implementations.
   - `peaks_ressources/` — supporting resources (lookup tables, RNG, ring buffer) ported from Peaks.
   - `number_station/` — number station generator, ported from Peaks.
+  - `clap_engine/` — granular "clap" sample-playback engine (see below).
   - `processor.cpp/.h` — voice processing/sequencing glue.
 - `hw_interfaces/` — RP2040 hardware drivers:
   - `pwm_audio_codec/` — PWM-based audio output driver used in place of Peaks' original codec.
   - `adc/`, `gate_input/` — analog input and gate/trigger input interfaces.
 - `lib/` — shared DSP/STM-compatibility headers (`dsp.h`, `mu_dsp.h`, `mu_stmlib.h`) used to bridge the ported Peaks
   code onto the RP2040 SDK.
+
+## Processors and parameters
+
+Each processor is configured by four control-rate parameters, `parameter[0]` through `parameter[3]`. These come
+directly from four analog potentiometer inputs read by the RP2040's ADC — `parameter[0]` is ADC 1, `parameter[1]` is
+ADC 2, `parameter[2]` is ADC 3, and `parameter[3]` is ADC 4 (see `AdcToParameter()` in `core1/core1_main.cpp`). Each
+parameter is a `uint16_t` spanning the ADC's full `0..65535` scaled range, regardless of what it controls in a given
+processor.
+
+### Bass Drum (`kBassDrum`, default) — `sounds_generators/drums/bass_drum.h`
+
+808-style bass drum.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Frequency (bipolar around the pot's center) — base pitch of the drum. |
+| `parameter[1]` | ADC 2 | Punch — amount of transient "click"/attack energy. |
+| `parameter[2]` | ADC 3 | Tone — brightness of the low-pass filter applied to the resonator. |
+| `parameter[3]` | ADC 4 | Decay — resonator resonance/decay time (how long the tone rings out). |
+
+### Snare Drum (`kSnareDrum`) — `sounds_generators/drums/snare_drum.h`
+
+808-style snare drum.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Frequency (bipolar around the pot's center) — base pitch of the two body oscillators. |
+| `parameter[1]` | ADC 2 | Tone — balance of gain between the two body oscillators. |
+| `parameter[2]` | ADC 3 | Snappy — amount of noise ("snare snap") mixed into the body. |
+| `parameter[3]` | ADC 4 | Decay — body and noise decay time. |
+
+### Hi-Hat (`kHighHat`) — `sounds_generators/drums/high_hat.h`
+
+808-style hi-hat.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Envelope update period — how often the amplitude envelope is refreshed (lower rates add a lo-fi/stepped character). |
+| `parameter[1]` | ADC 2 | Tone repeat processing — oversampling factor of the metallic noise filter (affects brightness/character). |
+| `parameter[2]` | ADC 3 | Noise filter resonance. |
+| `parameter[3]` | ADC 4 | Noise mixer — blends between half-wave-rectified and full (bipolar) noise, affecting harshness. |
+
+### FM Drum (`kFmDrum`) — `sounds_generators/drums/fm_drum.h`
+
+Sine FM drum, similar to the BD/SD in the Anushri synthesizer.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Frequency — base pitch. |
+| `parameter[1]` | ADC 2 | FM amount — amount of frequency modulation (metallic tone / pitch sweep). |
+| `parameter[2]` | ADC 3 | Decay — amplitude and FM envelope decay time. |
+| `parameter[3]` | ADC 4 | Noise — amount of noise/overdrive blended into the output. |
+
+### Number Station (`kNumberStation`) — `sounds_generators/number_station/number_station.h`
+
+Shortwave "numbers station" voice generator.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Tone — pitch and pitch-shift amount of the voice-like oscillator. |
+| `parameter[1]` | ADC 2 | Transition probability — likelihood of the spoken "digit" changing. |
+| `parameter[2]` | ADC 3 | Noise — amount of background/static noise. |
+| `parameter[3]` | ADC 4 | Distortion — amount of waveshaping distortion applied to the voice. |
+
+### Clap Engine (`kClapEngine`) — `sounds_generators/clap_engine/clap_engine.h`
+
+Granular sample-playback ("clap") engine: on each gate trigger, short bursts ("grains") of one or more built-in
+samples are triggered stochastically for as long as a decaying envelope stays open.
+
+| Parameter | ADC   | Function |
+|-----------|-------|----------|
+| `parameter[0]` | ADC 1 | Source — first half of the pot's range selects one of the 12 built-in samples individually; the second half selects among every combination of two or more samples played together. |
+| `parameter[1]` | ADC 2 | Density — average grain rate (how many grains are triggered per second). |
+| `parameter[2]` | ADC 3 | Spread — amount of per-grain randomization: start position within the sample, playback rate/pitch, duration, and probability of reverse playback. |
+| `parameter[3]` | ADC 4 | Decay — shapes the whole grain cloud after a gate trigger: how long grain density, grain duration, and output gain all taper off together. |
 
 ## Prerequisites
 
