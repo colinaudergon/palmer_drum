@@ -79,15 +79,48 @@ namespace peaks
 
       // Apply the decay envelope as a plain amplitude scaler (Q16 gain,
       // always <= 1.0, so this can never push accumulator further out of
-      // range -- CLIP() below still guards against grain-summing
+      // range -- SoftLimit() below still guards against grain-summing
       // overflow, not this multiply).
       accumulator = (accumulator * static_cast<int32_t>(envelope_)) >> 16;
 
-      CLIP(accumulator);
-      *out++ = accumulator;
+      *out++ = static_cast<int16_t>(SoftLimit(accumulator));
 
       envelope_ = (envelope_ > envelope_decrement_) ? envelope_ - envelope_decrement_ : 0;
     }
+  }
+
+  int32_t ClapEngine::SoftLimit(int32_t x)
+  {
+    // Below kLimiterThreshold (most of the time -- a handful of grains
+    // overlapping, none of them clipping on their own), this is a
+    // transparent pass-through: exactly x, no coloration at all. Only
+    // once several loud grains stack up and the raw sum pushes past the
+    // threshold does this curve start bending it over, asymptotically
+    // approaching (but never reaching or exceeding) kLimiterCeiling --
+    // trading a hard, buzzy flat-top clip (the old CLIP() macro) for a
+    // smooth, continuous roll-off with no audible "kink": both the
+    // curve's value and its slope match the identity line exactly at
+    // x == +/-kLimiterThreshold.
+    //
+    //   y = L - R^2 / (|x| - T + R),  where R = L - T
+    //
+    // (a standard soft-knee/rational limiter shape). As |x| -> infinity,
+    // R^2 / (|x| - T + R) -> 0, so y -> L; at |x| == T it reduces to
+    // exactly T (continuous), and its derivative there is exactly 1
+    // (matching the identity line's slope, so the join is smooth, not
+    // just continuous).
+    const int32_t magnitude = (x < 0) ? -x : x;
+    if (magnitude <= kLimiterThreshold)
+    {
+      return x;
+    }
+    const int32_t sign = (x < 0) ? -1 : 1;
+    const int64_t range_squared =
+        static_cast<int64_t>(kLimiterRange) * kLimiterRange;
+    const int64_t denominator = magnitude - kLimiterThreshold + kLimiterRange;
+    const int32_t y = kLimiterCeiling -
+                       static_cast<int32_t>(range_squared / denominator);
+    return sign * y;
   }
 
   void ClapEngine::ActivateGrains()

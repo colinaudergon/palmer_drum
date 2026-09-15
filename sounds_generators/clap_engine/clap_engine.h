@@ -207,6 +207,23 @@ namespace peaks
     // for the exact curve.
     bool RandomizedReverse() const;
 
+    // Smoothly bends the summed/enveloped grain output (which, with many
+    // grains active at once, easily exceeds the +/-32767 range a single
+    // int16_t output sample can hold) back down towards that range,
+    // instead of hard-clipping it flat the instant it crosses the
+    // boundary. See the .cpp for the exact curve and rationale.
+    static int32_t SoftLimit(int32_t x);
+
+    // Below this magnitude, SoftLimit() is a transparent no-op (this is
+    // where the vast majority of typical grain overlap -- one to a few
+    // grains -- always lands). 80% of full scale leaves enough headroom
+    // above it for the limiter curve to do meaningful, audible work
+    // before output would otherwise have clipped.
+    static constexpr int32_t kLimiterCeiling = 32767;
+    static constexpr int32_t kLimiterThreshold = kLimiterCeiling * 4 / 5;
+    static constexpr int32_t kLimiterRange =
+        kLimiterCeiling - kLimiterThreshold;
+
     // Nominal (native-pitch) playback rate: GrainSource reads one source
     // sample per output sample.
     static constexpr uint32_t kNominalPhaseIncrement =
