@@ -37,6 +37,7 @@ add_subdirectory(hw_interfaces/pico_adc)
 add_subdirectory(hw_interfaces/Leds)
 add_subdirectory(hw_interfaces/digital_input)
 add_subdirectory(hw_interfaces/button_input)
+add_subdirectory(hw_interfaces/debug_pin)
 add_subdirectory(sounds_generators)
 
 # Add executable. Default name is the project name, version 0.1
@@ -68,6 +69,14 @@ target_include_directories(palmer_drum PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 
 )
+
+# DebugPin toggles a scope-visible GPIO around buffer_callback() so its timing
+# can be measured on a logic analyzer -- only wired in for Debug builds so it
+# never costs anything (flash, GPIO, or a branch) in Release.
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_link_libraries(palmer_drum DebugPin)
+    target_compile_definitions(palmer_drum PRIVATE DEBUG_BUILD)
+endif()
 
 pico_add_extra_outputs(palmer_drum)
 

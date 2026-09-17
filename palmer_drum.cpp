@@ -34,6 +34,10 @@
 #include "sounds_generators/peaks_ressources/gate_processor.h"
 #include "utils/cross_core_queues.h"
 
+#ifdef DEBUG_BUILD
+#include "DebugPin.h"
+#endif
+
 static constexpr size_t buffer_size = 256;
 int16_t output_buffer[buffer_size];
 
@@ -45,6 +49,13 @@ InputEventQueue button_event_queue_;
 hw_interface::PicoAudioCodec audio_codec;
 
 peaks::Processors processor;
+
+#ifdef DEBUG_BUILD
+// Toggled around buffer_callback()'s work so its timing can be observed on a
+// logic analyzer/scope. Only present in Debug builds -- see the top-level
+// CMakeLists.txt.
+hw_interface::DebugPin debug_pin;
+#endif
 
 namespace
 {
@@ -63,6 +74,10 @@ void buffer_callback(hw_interface::audio_buffer_t *buffer_0, hw_interface::audio
     // buffer_0 is always the buffer to be consumed for this callback ("current"); buffer_1 is
     // read-ahead scratch space managed internally by the codec and isn't touched here.
     (void)buffer_1;
+
+#ifdef DEBUG_BUILD
+    debug_pin.SetHigh();
+#endif
 
     bool trigger_pending = pending_gate_triggers_ != 0;
     if (trigger_pending)
@@ -84,6 +99,10 @@ void buffer_callback(hw_interface::audio_buffer_t *buffer_0, hw_interface::audio
         buffer_0->buffer_left[i] = output_buffer[i];
         buffer_0->buffer_right[i] = output_buffer[i];
     }
+
+#ifdef DEBUG_BUILD
+    debug_pin.SetLow();
+#endif
 }
 
 int main()
@@ -98,6 +117,10 @@ int main()
     multicore_launch_core1(Core1Main);
 
     processor.Init(0);
+
+#ifdef DEBUG_BUILD
+    debug_pin.Init(10);
+#endif
 
     int codec_init_result = audio_codec.Init();
 
