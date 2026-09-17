@@ -31,10 +31,8 @@ namespace peaks
 
   void ClapEngine::Init()
   {
-    // pot_value == 0 gives each ISampleTable implementation's own sane
-    // default active set (e.g. SampleTable selects just kSamples[0];
-    // SampleTableFromBins selects just flattened bin 0) -- see
-    // ISampleTable::MapPotToActiveMask().
+    // pot_value == 0 selects just kSamples[0] as the sole active sample
+    // -- see SampleTable::MapPotToActiveMask().
     source_ = sample_table_->MapPotToActiveMask(0);
     sample_table_->Init(source_);
     density_ = 0;
@@ -149,13 +147,13 @@ namespace peaks
     const size_t active_count = sample_table_->active_count();
     if (active_count == 0)
     {
-      // Nothing is currently selectable (e.g. a SampleTableFromBins that
-      // hasn't had SetSampleBins() called yet) -- drop this onset rather
-      // than divide by zero below.
+      // Nothing is currently selectable -- drop this onset rather than
+      // divide by zero below.
       return;
     }
     size_t chosen_n = mu_stmlib::Random::GetWord() % active_count;
-    grain_essence_.set_sample_index(sample_table_->NthActiveIndex(chosen_n));
+    grain_essence_.set_sample_index(static_cast<uint16_t>(
+        sample_table_->NthActiveIndex(chosen_n)));
     grain_essence_.set_start_position(start_pos);
     grain_essence_.set_phase_increment(rate);
     grain_essence_.set_duration_samples(grain_duration_samples);

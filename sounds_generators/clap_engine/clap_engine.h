@@ -34,7 +34,6 @@
 #include "samples/samples.h"
 #include "engine/grain.h"
 #include "engine/grain_source.h"
-#include "engine/i_sample_table.h"
 #include "engine/envelope.h"
 #include "../peaks_ressources/random.h"
 #include "engine/lut_neg_log.h"
@@ -45,12 +44,8 @@ namespace peaks
   class ClapEngine : public IProcessor
   {
   public:
-    // sample_table is the ISampleTable this engine's grains select from
-    // (SampleTable, SampleTableFromBins, ...) -- injected rather than
-    // owned, so the same ClapEngine implementation can be reused with
-    // different table implementations/data (see ClapEngineFromBins in
-    // processor.h). The referenced table must outlive this ClapEngine.
-    explicit ClapEngine(ISampleTable &sample_table) : sample_table_(&sample_table) {}
+    // sample_table is the SampleTable this engine's grains select from
+    explicit ClapEngine(SampleTable &sample_table) : sample_table_(&sample_table) {}
     ~ClapEngine() override {}
 
     void Init() override;
@@ -65,11 +60,7 @@ namespace peaks
     }
 
   private:
-    // Delegates entirely to sample_table_'s own MapPotToActiveMask() --
-    // what a given pot_value actually selects (a whole sample, a single
-    // bin, ...) is specific to whichever ISampleTable implementation was
-    // injected at construction, so ClapEngine itself no longer needs to
-    // know anything about that layout.
+    // Delegates entirely to sample_table_'s own MapPotToActiveMask().
     void set_source(uint16_t source)
     {
       source_ = sample_table_->MapPotToActiveMask(source);
@@ -255,18 +246,15 @@ namespace peaks
     static constexpr uint32_t kMaxDecaySamples = kSampleRate * 3;       // 3s
 
     // Currently active mask, as returned by sample_table_->
-    // MapPotToActiveMask() -- meaning is entirely up to whichever
-    // ISampleTable implementation was injected at construction. Widened
-    // to uint32_t (rather than the classic SampleTable's 16-bit,
-    // 12-sample bitmask) so it can also hold a SampleTableFromBins mask,
-    // which may use up to 32 bits.
-    uint32_t source_;
+    // MapPotToActiveMask() -- bit i means kSamples[i] is one of the
+    // samples available to be selected for a grain.
+    uint16_t source_;
     static constexpr uint32_t kNegLogFractionalBits = 12;
-    static constexpr size_t kNGrains = 12;
+    static constexpr size_t kNGrains = 16;
 
     // Not owned: see the constructor's comment. Never rebound after
     // construction.
-    ISampleTable *sample_table_;
+    SampleTable *sample_table_;
     GrainSource::Essence grain_essence_;
     Envelope::Essence envelope_essence_;
     Grain grain_pool_[kNGrains];

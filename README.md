@@ -103,22 +103,6 @@ scheduling) follows Ross Bencina's
 | `parameter[2]` | ADC 3 | Spread — amount of per-grain randomization: start position within the sample, playback rate/pitch, duration, and probability of reverse playback. |
 | `parameter[3]` | ADC 4 | Decay — shapes the whole grain cloud after a gate trigger: how long grain density, grain duration, and output gain all taper off together. |
 
-### Clap Engine From Bins (`kClapEngineFromBins`) — `sounds_generators/clap_engine/clap_engine.h`
-
-Same `ClapEngine` engine/parameters as above, but backed by a `SampleTableFromBins` instead of a plain `SampleTable`:
-its selectable grain sources are individual energy "bins" rather than whole samples. Bins are read directly from
-`kSamples[]` (see `clap_engine/samples/samples.h`) -- each sample's `AudioBin` array (`index`/`size`/`power`/
-`raw_power`, generated alongside its audio by `Scripts/wav_to_header.py --bins N`) references an offset window into
-that *same* sample's embedded array, so bin-based and whole-sample playback share one copy of the audio data.
-Currently 16 bins per sample across all 12 built-in samples. Exactly one bin is active (selectable by a grain) at a
-time.
-
-| Parameter | ADC   | Function |
-|-----------|-------|----------|
-| `parameter[0]` | ADC 1 | Source — selects a single active bin, linearly, across every bin currently registered with the table. |
-| `parameter[1]` | ADC 2 | Density — same as `kClapEngine`. |
-| `parameter[2]` | ADC 3 | Spread — same as `kClapEngine`. |
-| `parameter[3]` | ADC 4 | Decay — same as `kClapEngine`. |
 
 ## Prerequisites
 

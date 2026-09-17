@@ -51,7 +51,6 @@
 
 #include "../../../lib/mu_stmlib.h"
 #include "../samples/samples.h"
-#include "i_sample_table.h"
 
 namespace peaks
 {
@@ -90,20 +89,13 @@ namespace peaks
   // Shared, read-only sample data that any number of GrainSource instances
   // may read from concurrently, each at its own independent position and
   // rate. This is the "SourceData" role from Bencina's architecture (a
-  // wavetable, in the Stored Sample Granulator case) -- it is registered
-  // once with a GrainSource::Essence and then referenced (never copied) by
+  // wavetable, in the Stored Sample Granulator case) 
+  // it is registered once with a GrainSource::Essence and then referenced (never copied) by
   // every Grain that reads from it.
   //
-  // Unlike a single fixed wavetable, SampleTable represents a *bank* of
-  // zero or more entries of kSamples (clap_engine/samples/samples.h),
-  // selected via a bitmask -- mirroring ClapEngine's set_source(), where
-  // any combination of the 12 available samples may be active at once.
-  // Each individual grain still only ever reads from exactly one of those
-  // entries at a time (see GrainSource::Essence::set_sample_index()); the
-  // bank simply lets whichever component activates grains (e.g.
-  // GrainScheduler) pick a different active sample per grain, so several
-  // samples can be "in rotation" as sources concurrently.
-  class SampleTable : public ISampleTable
+  // SampleTable represents a *bank* of zero or more entries of kSamples
+  // (clap_engine/samples/samples.h), selected via a bitmask
+  class SampleTable
   {
   public:
     SampleTable() : active_mask_(0) {}
@@ -113,25 +105,25 @@ namespace peaks
     // a grain. Bits beyond kNsamples are ignored.
     explicit SampleTable(uint16_t active_mask) { Init(active_mask); }
 
-    inline void Init(uint32_t active_mask) override
+    inline void Init(uint16_t active_mask)
     {
-      active_mask_ = static_cast<uint16_t>(active_mask) & kAllSamplesMask;
+      active_mask_ = active_mask & kAllSamplesMask;
     }
 
     inline uint16_t active_mask() const { return active_mask_; }
 
     // True as long as at least one sample is active in this bank.
-    inline bool valid() const override { return active_mask_ != 0; }
+    inline bool valid() const { return active_mask_ != 0; }
 
     // True if kSamples[index] is part of this bank's active set.
-    inline bool IsActive(size_t index) const override
+    inline bool IsActive(size_t index) const
     {
       return index < kNsamples && ((active_mask_ >> index) & 1u) != 0;
     }
 
     // Number of samples currently active in this bank (population count of
     // active_mask()).
-    inline size_t active_count() const override
+    inline size_t active_count() const
     {
       size_t count = 0;
       for (uint16_t mask = active_mask_; mask != 0; mask >>= 1)
@@ -144,7 +136,7 @@ namespace peaks
     // Maps n (0 .. active_count()-1) to the actual kSamples[] index of the
     // n-th active sample, in ascending index order. Returns kNsamples if n
     // is out of range (e.g. the bank is empty).
-    inline size_t NthActiveIndex(size_t n) const override
+    inline size_t NthActiveIndex(size_t n) const
     {
       for (size_t index = 0; index < kNsamples; ++index)
       {
@@ -165,22 +157,17 @@ namespace peaks
     // GrainSource once a specific index has already been chosen (e.g. via
     // NthActiveIndex()).
     //
-    // Deliberately *not* defined inline here: per the Itanium C++ ABI (used
-    // by GCC), a polymorphic class with every virtual function defined
-    // inline in its header has no single "key function" to anchor its
-    // vtable to, so the vtable (and every inline virtual function's body)
-    // gets emitted as a weak/COMDAT symbol in *every* translation unit that
-    // constructs a SampleTable. Since data()'s body references kSamples --
-    // itself only reachable via samples.h's internal-linkage (static)
-    // arrays -- each of those duplicate emissions would drag its own
-    // private copy of every sample's audio data into that TU's object
-    // file, ballooning flash usage far past a single copy. Defining data()
-    // out-of-line (in grain_source.cpp) makes it this class's key
-    // function, pinning the vtable -- and the one real copy of this
-    // function's body -- to that single translation unit instead.
-    const int16_t *data(size_t index) const override;
+    // Deliberately *not* defined inline here: kSamples' underlying arrays
+    // (clap_engine/samples/sample_perc_*.h) are declared at namespace
+    // scope with implicit internal linkage, so each translation unit that
+    // references them gets its own private copy embedded in its object
+    // file. Defining data()/size() out-of-line (in grain_source.cpp)
+    // keeps that reference -- and the one real copy of every sample's
+    // audio data -- confined to that single translation unit, instead of
+    // being duplicated into every TU that happens to call these methods.
+    const int16_t *data(size_t index) const;
 
-    size_t size(size_t index) const override;
+    size_t size(size_t index) const;
 
     // `pot_value` arrives as a uint16_t but in practice originates from a
     // 12-bit ADC reading scaled up to the full uint16_t range (see
@@ -199,7 +186,7 @@ namespace peaks
     //    together (i.e. every bitmask over the 12 samples except the
     //    empty set and the 12 singles already covered by the first
     //    half).
-    uint32_t MapPotToActiveMask(uint16_t pot_value) const override;
+    uint16_t MapPotToActiveMask(uint16_t pot_value) const;
 
   private:
     static constexpr uint16_t kAllSamplesMask =
@@ -228,13 +215,12 @@ namespace peaks
   };
 
   // Synthesizes the waveform for a single grain by reading (with linear
-  // interpolation) from a shared ISampleTable (SampleTable, SampleTable
-  // FromBins, ...).
+  // interpolation) from a shared SampleTable.
   class GrainSource
   {
   public:
     // Stores the initialization parameters needed to (re)start a
-    // GrainSource when a new grain is activated: which ISampleTable to
+    // GrainSource when a new grain is activated: which SampleTable to
     // read from, where in it to start, at what rate, and in which
     // direction.
     //
@@ -260,9 +246,7 @@ namespace peaks
       // Registers the shared bank of samples grains initialized from this
       // Essence may read from. Mirrors registering a shared DelayLine or
       // StoredSample with a Scheduler's sourceEssence in the article.
-      // Accepts any ISampleTable implementation (SampleTable,
-      // SampleTableFromBins, ...).
-      inline void set_sample_table(const ISampleTable *sample_table)
+      inline void set_sample_table(const SampleTable *sample_table)
       {
         sample_table_ = sample_table;
       }
@@ -311,7 +295,7 @@ namespace peaks
         duration_samples_ = duration_samples;
       }
 
-      inline const ISampleTable *sample_table() const { return sample_table_; }
+      inline const SampleTable *sample_table() const { return sample_table_; }
       inline uint16_t sample_index() const { return sample_index_; }
       inline uint16_t start_position() const { return start_position_; }
       inline uint32_t phase_increment() const { return phase_increment_; }
@@ -319,7 +303,7 @@ namespace peaks
       inline uint32_t duration_samples() const { return duration_samples_; }
 
     private:
-      const ISampleTable *sample_table_;
+      const SampleTable *sample_table_;
       uint16_t sample_index_;
       uint16_t start_position_;
       uint32_t phase_increment_;

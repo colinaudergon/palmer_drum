@@ -40,7 +40,6 @@
 #include "number_station/number_station.h"
 #include "clap_engine/clap_engine.h"
 #include "clap_engine/engine/grain_source.h"
-#include "clap_engine/engine/sample_table_from_bins.h"
 
 #include "i_processor.h"
 #include "peaks_ressources/gate_processor.h"
@@ -58,7 +57,6 @@ namespace peaks
         kFmDrum,
         kNumberStation,
         kClapEngine,
-        kClapEngineFromBins,
         kLast
     };
 
@@ -66,8 +64,7 @@ namespace peaks
     {
     public:
         Processors()
-            : clap_engine_(clap_sample_table_),
-              clap_engine_from_bins_(clap_bins_table_) {}
+            : clap_engine_(clap_sample_table_) {}
         ~Processors() {}
 
         void Init(uint8_t index);
@@ -128,21 +125,12 @@ namespace peaks
         FmDrum fm_drum_;
         NumberStation number_station_;
 
-        // Sample tables are declared before the ClapEngine instances
-        // that reference them (via constructor injection, see
-        // clap_engine.h) so their storage is unambiguously available by
-        // the time each ClapEngine's constructor stashes a pointer to
-        // it -- construction order follows declaration order within a
-        // class, regardless of the member-initializer-list order above.
+        // Sample table is declared before the ClapEngine instance that
+        // references it (via constructor injection, see clap_engine.h)
+        // so its storage is unambiguously available by the time
+        // ClapEngine's constructor stashes a pointer to it
         SampleTable clap_sample_table_;
-        SampleTableFromBins clap_bins_table_;
         ClapEngine clap_engine_;
-        // Reuses the same ClapEngine grain-scheduling/synthesis logic,
-        // just backed by clap_bins_table_ (a SampleTableFromBins), which
-        // reads its AudioBin data straight out of kSamples[] (see
-        // samples.h / sample_table_from_bins.h) -- no separate bin
-        // storage or aggregation step needed.
-        ClapEngine clap_engine_from_bins_;
     };
 
 

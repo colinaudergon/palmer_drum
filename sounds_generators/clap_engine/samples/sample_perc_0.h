@@ -1,23 +1,11 @@
 // Auto-generated from 'perc_0.wav' by Scripts/wav_to_header.py
 // Copyright 2026 colinaudergon. Licensed under the MIT License; see the repository's LICENSE file.
-// Source: 44100Hz, 1ch, int16 -> 44100Hz mono int16, split into 16 bin(s)
+// Source: 44100Hz, 1ch, int16 -> 44100Hz mono int16
 // Do not edit by hand; regenerate from the source .wav instead.
 #pragma once
 
 #include <cstdint>
 #include <cstddef>
-
-#ifndef AUDIOBIN_H_
-#define AUDIOBIN_H_
-typedef struct {
-    size_t index;        // offset of the bin's first sample in the
-                         // sample array it belongs to
-    size_t size;         // number of samples in the bin
-    uint16_t power;      // normalized: 0..65535 fraction of max
-                         // possible mean-square energy (32767^2)
-    uint32_t raw_power;  // raw (unnormalized) mean-square value
-} AudioBin;
-#endif // AUDIOBIN_H_
 
 const int16_t sample_perc_0[] = {
     -10, -7, -7, -9, -6, -9, -9, -6, -11, -3, -10, -1, -4, 0, -6, 1, -3, 3, -3, 7,
@@ -899,24 +887,3 @@ const int16_t sample_perc_0[] = {
 };
 
 const size_t sample_perc_0_length = 17511;
-
-const AudioBin sample_perc_0_bins[] = {
-    { 0u, 1094u, 2736u, 44838997u },
-    { 1094u, 1094u, 450u, 7375525u },
-    { 2188u, 1094u, 522u, 8559895u },
-    { 3282u, 1094u, 108u, 1775005u },
-    { 4376u, 1094u, 100u, 1652884u },
-    { 5470u, 1094u, 35u, 585697u },
-    { 6564u, 1094u, 11u, 187900u },
-    { 7658u, 1094u, 3u, 58218u },
-    { 8752u, 1094u, 4u, 68167u },
-    { 9846u, 1094u, 3u, 63727u },
-    { 10940u, 1094u, 1u, 24402u },
-    { 12034u, 1094u, 0u, 15688u },
-    { 13128u, 1094u, 1u, 21309u },
-    { 14222u, 1094u, 0u, 10209u },
-    { 15316u, 1094u, 2u, 36681u },
-    { 16410u, 1101u, 2u, 40650u },
-};
-
-const size_t sample_perc_0_num_bins = 16;
